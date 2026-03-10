@@ -4,13 +4,14 @@ import { SwarmOverlay } from '@/components/ui/SwarmOverlay';
 import { NodeTooltip } from '@/components/ui/NodeTooltip';
 import { NodeDetailPanel } from '@/components/ui/NodeDetailPanel';
 import { BuildingPopup } from '@/components/ui/BuildingPopup';
+import { ContractPopup } from '@/components/ui/ContractPopup';
 import { CrabNode, swarmNodes } from '@/data/nodes';
 import { useSwarmStore } from '@/stores/swarmStore';
 
 const Index = () => {
   const [hoveredNode, setHoveredNode] = useState<CrabNode | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
-  const { selectedNodeId, setSelectedNodeId, buildingOpen, setBuildingOpen } = useSwarmStore();
+  const { selectedNodeId, setSelectedNodeId, buildingOpen, setBuildingOpen, contractOpen, setContractOpen } = useSwarmStore();
 
   const handleNodeHover = useCallback((node: CrabNode | null, pos: { x: number; y: number } | null) => {
     setHoveredNode(node);
@@ -35,6 +36,9 @@ const Index = () => {
       )}
       {buildingOpen && (
         <BuildingPopup onClose={() => setBuildingOpen(false)} />
+      )}
+      {contractOpen && (
+        <ContractPopup onClose={() => setContractOpen(false)} />
       )}
     </div>
   );
