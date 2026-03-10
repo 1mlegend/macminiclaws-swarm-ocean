@@ -39,10 +39,10 @@ export function SwarmConnections() {
   return (
     <group ref={groupRef}>
       {nodeConnections.map((conn, i) => (
-        <Line key={`n-${i}`} points={[conn.from, conn.to]} color="#00bfff" lineWidth={1} transparent opacity={0.2} />
+        <Line key={`n-${i}`} points={[conn.from, conn.to]} color="#ff5533" lineWidth={1} transparent opacity={0.2} />
       ))}
       {hubNodes.map((node, i) => (
-        <Line key={`h-${i}`} points={[node.position, hubPosition]} color="#00bfff" lineWidth={1} transparent opacity={0.2} />
+        <Line key={`h-${i}`} points={[node.position, hubPosition]} color="#ff5533" lineWidth={1} transparent opacity={0.2} />
       ))}
     </group>
   );

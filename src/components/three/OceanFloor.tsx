@@ -1,5 +1,4 @@
 import { useRef, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 export function OceanFloor() {
@@ -17,7 +16,7 @@ export function OceanFloor() {
     return geo;
   }, []);
 
-  // Rocks
+  // Rocks — warm sandstone tones
   const rocks = useMemo(() => {
     const arr = [];
     for (let i = 0; i < 40; i++) {
@@ -33,13 +32,19 @@ export function OceanFloor() {
 
   return (
     <>
+      {/* Sandy beach ground */}
       <mesh ref={meshRef} geometry={geometry} rotation-x={-Math.PI / 2} receiveShadow>
-        <meshStandardMaterial color="#8a7a5a" roughness={0.9} metalness={0.1} />
+        <meshStandardMaterial color="#c4a56e" roughness={0.95} metalness={0.05} />
+      </mesh>
+      {/* Shallow water zone — one side of the map */}
+      <mesh position={[0, 0.05, 35]} rotation-x={-Math.PI / 2}>
+        <planeGeometry args={[100, 30]} />
+        <meshStandardMaterial color="#2288aa" roughness={0.3} metalness={0.1} transparent opacity={0.35} />
       </mesh>
       {rocks.map((rock, i) => (
         <mesh key={i} position={rock.pos} scale={rock.scale} rotation-y={rock.rot}>
           <dodecahedronGeometry args={[1, 0]} />
-          <meshStandardMaterial color="#5a5a5a" roughness={0.8} metalness={0.2} />
+          <meshStandardMaterial color="#8a7a5a" roughness={0.85} metalness={0.1} />
         </mesh>
       ))}
     </>
