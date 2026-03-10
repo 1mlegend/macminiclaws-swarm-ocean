@@ -66,9 +66,26 @@ export function CentralHub() {
     pos.z += velocity.current.z * delta;
     pos.x = THREE.MathUtils.clamp(pos.x, -BOUNDS, BOUNDS);
     pos.z = THREE.MathUtils.clamp(pos.z, -BOUNDS, BOUNDS);
-    pos.y = GROUND_Y + Math.sin(clock.elapsedTime * 0.5) * 0.15;
 
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(
+    // Jump logic
+    if (keys[' '] && isGrounded.current) {
+      jumpVelocity.current = 8;
+      isGrounded.current = false;
+    }
+
+    const baseY = GROUND_Y + Math.sin(clock.elapsedTime * 0.5) * 0.15;
+
+    if (!isGrounded.current) {
+      jumpVelocity.current -= 20 * delta; // gravity
+      pos.y += jumpVelocity.current * delta;
+      if (pos.y <= baseY) {
+        pos.y = baseY;
+        isGrounded.current = true;
+        jumpVelocity.current = 0;
+      }
+    } else {
+      pos.y = baseY;
+    }
       groupRef.current.rotation.y,
       targetRotY.current,
       0.1
