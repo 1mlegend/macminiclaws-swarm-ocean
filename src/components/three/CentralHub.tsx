@@ -22,22 +22,11 @@ export function CentralHub() {
   const glowRef = useRef<THREE.Mesh>(null);
   const haloRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
-  const { scene, animations } = useGLTF('/models/macminiclaws_walk.glb');
-  
-  const clonedScene = useMemo(() => {
-    const clone = scene.clone(true);
-    // Need to clone the skeleton properly for animations
-    const skinnedMeshes: THREE.SkinnedMesh[] = [];
-    scene.traverse((child) => {
-      if ((child as THREE.SkinnedMesh).isSkinnedMesh) {
-        skinnedMeshes.push(child as THREE.SkinnedMesh);
-      }
-    });
-    return scene;
-  }, [scene]);
 
-  const { actions, mixer } = useAnimations(animations, modelRef);
-  
+  // Load animated model
+  const { scene, animations } = useGLTF('/models/macminiclaws_walk.glb');
+  const { actions } = useAnimations(animations, modelRef);
+
   const velocity = useRef(new THREE.Vector3());
   const targetRotY = useRef(0);
   const jumpVelocity = useRef(0);
@@ -47,7 +36,7 @@ export function CentralHub() {
 
   // Texture color space fix
   useEffect(() => {
-    clonedScene.traverse((child) => {
+    scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
         if (mat?.map) {
@@ -56,13 +45,19 @@ export function CentralHub() {
         }
       }
     });
-  }, [clonedScene]);
+  }, [scene]);
 
-  // Log available animations for debugging
+  // Log animations + auto-scale debug
   useEffect(() => {
-    console.log('Available animations:', animations.map(a => a.name));
+    console.log('Walk animations:', animations.map(a => a.name));
     console.log('Actions:', Object.keys(actions));
-  }, [animations, actions]);
+    
+    // Compute bounding box to auto-detect scale
+    const box = new THREE.Box3().setFromObject(scene);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    console.log('Model bounding box size:', size.x, size.y, size.z);
+  }, [scene, animations, actions]);
 
   useFrame(({ clock }, delta) => {
     if (!groupRef.current) return;
@@ -75,24 +70,26 @@ export function CentralHub() {
     if (keys['d'] || keys['arrowright']) dir.x += 1;
 
     const isMoving = dir.length() > 0;
-    
+
     // Play/stop walk animation based on movement
     if (isMoving && !wasMoving.current) {
-      // Start walk animation
       const actionNames = Object.keys(actions);
-      const walkAction = actions[actionNames[0]]; // Use first available animation
-      if (walkAction) {
-        walkAction.reset().fadeIn(0.2).play();
-        walkAction.setLoop(THREE.LoopRepeat, Infinity);
-        walkAction.timeScale = 1.5;
+      if (actionNames.length > 0) {
+        const walkAction = actions[actionNames[0]];
+        if (walkAction) {
+          walkAction.reset().fadeIn(0.2).play();
+          walkAction.setLoop(THREE.LoopRepeat, Infinity);
+          walkAction.timeScale = 1.5;
+        }
       }
       wasMoving.current = true;
     } else if (!isMoving && wasMoving.current) {
-      // Stop walk animation
       const actionNames = Object.keys(actions);
-      const walkAction = actions[actionNames[0]];
-      if (walkAction) {
-        walkAction.fadeOut(0.3);
+      if (actionNames.length > 0) {
+        const walkAction = actions[actionNames[0]];
+        if (walkAction) {
+          walkAction.fadeOut(0.3);
+        }
       }
       wasMoving.current = false;
     }
@@ -121,7 +118,7 @@ export function CentralHub() {
     const baseY = GROUND_Y + Math.sin(clock.elapsedTime * 0.5) * 0.15;
 
     if (!isGrounded.current) {
-      jumpVelocity.current -= 20 * delta; // gravity
+      jumpVelocity.current -= 20 * delta;
       pos.y += jumpVelocity.current * delta;
       if (pos.y <= baseY) {
         pos.y = baseY;
@@ -140,7 +137,7 @@ export function CentralHub() {
 
     setPosition([pos.x, pos.y, pos.z]);
 
-    // Pulsing glow — 2.5s cycle
+    // Pulsing glow
     const pulse = Math.sin(clock.elapsedTime * 2.5) * 0.5 + 0.5;
 
     if (glowRef.current) {
@@ -163,19 +160,16 @@ export function CentralHub() {
   return (
     <group ref={groupRef} position={[0, GROUND_Y, 0]}>
       <group ref={modelRef}>
-        <primitive object={clonedScene} scale={3.0} />
+        <primitive object={scene} scale={3.0} />
       </group>
-      {/* Outer glow sphere */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[1, 16, 16]} />
         <meshBasicMaterial color="#ff4422" transparent opacity={0.06} />
       </mesh>
-      {/* Ground halo ring */}
       <mesh ref={haloRef} position={[0, -0.6, 0]} rotation-x={-Math.PI / 2}>
         <ringGeometry args={[1.5, 3, 32]} />
         <meshBasicMaterial color="#ff3311" transparent opacity={0.1} side={THREE.DoubleSide} />
       </mesh>
-      {/* Strong pulsing point light */}
       <pointLight ref={lightRef} color="#ff4422" intensity={5} distance={20} decay={2} />
     </group>
   );
