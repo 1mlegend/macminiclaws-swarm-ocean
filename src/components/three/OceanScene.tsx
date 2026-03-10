@@ -1,12 +1,12 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
-import { Suspense, useState } from 'react';
+import { Suspense } from 'react';
 import { OceanFloor } from './OceanFloor';
 import { CrabNodes } from './CrabNodes';
 import { CentralHub } from './CentralHub';
 import { SwarmConnections } from './SwarmConnections';
 import { OceanLighting } from './OceanLighting';
 import { SeaPlants } from './SeaPlants';
+import { CameraFollow } from './CameraFollow';
 import { CrabNode } from '@/data/nodes';
 
 interface OceanSceneProps {
@@ -18,13 +18,11 @@ export function OceanScene({ onNodeHover }: OceanSceneProps) {
     <Canvas
       camera={{ position: [15, 12, 15], fov: 55, near: 0.1, far: 200 }}
       style={{ position: 'fixed', inset: 0 }}
-      gl={{ antialias: true, alpha: false, toneMapping: 0 /* NoToneMapping — preserves original GLB colors */ }}
+      gl={{ antialias: true, alpha: false, toneMapping: 0 }}
       dpr={[1, 1.5]}
       onCreated={({ gl }) => {
-        // Color space fix: ensure sRGB output so textures render faithfully
         gl.outputColorSpace = 'srgb';
-        // Tone mapping fix: disable tone mapping to prevent color alteration
-        gl.toneMapping = 0; // THREE.NoToneMapping
+        gl.toneMapping = 0;
         gl.toneMappingExposure = 1;
       }}
     >
@@ -38,18 +36,7 @@ export function OceanScene({ onNodeHover }: OceanSceneProps) {
         <CrabNodes onNodeHover={onNodeHover} />
         <SwarmConnections />
       </Suspense>
-      <OrbitControls
-        enablePan
-        enableZoom
-        enableRotate
-        maxPolarAngle={Math.PI / 2.2}
-        minDistance={5}
-        maxDistance={50}
-        enableDamping
-        dampingFactor={0.05}
-        zoomSpeed={0.8}
-        rotateSpeed={0.5}
-      />
+      <CameraFollow />
     </Canvas>
   );
 }
