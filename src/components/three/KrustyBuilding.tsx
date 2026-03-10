@@ -1,8 +1,11 @@
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSwarmStore } from '@/stores/swarmStore';
 
 export function KrustyBuilding() {
+  const setBuildingOpen = useSwarmStore((s) => s.setBuildingOpen);
+  const handleClick = useCallback(() => setBuildingOpen(true), [setBuildingOpen]);
   const signRef = useRef<THREE.Group>(null);
   const flagsRef = useRef<THREE.Group>(null);
 
