@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { useGLTF, useAnimations } from '@react-three/drei';
 import * as THREE from 'three';
 import { useHubStore } from '@/stores/hubStore';
 
@@ -18,19 +18,36 @@ const DAMPING = 0.85;
 
 export function CentralHub() {
   const groupRef = useRef<THREE.Group>(null);
+  const modelRef = useRef<THREE.Group>(null);
   const glowRef = useRef<THREE.Mesh>(null);
   const haloRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
-  const { scene } = useGLTF('/models/macminiclaws.glb');
+  const { scene, animations } = useGLTF('/models/macminiclaws_walk.glb');
+  
+  const clonedScene = useMemo(() => {
+    const clone = scene.clone(true);
+    // Need to clone the skeleton properly for animations
+    const skinnedMeshes: THREE.SkinnedMesh[] = [];
+    scene.traverse((child) => {
+      if ((child as THREE.SkinnedMesh).isSkinnedMesh) {
+        skinnedMeshes.push(child as THREE.SkinnedMesh);
+      }
+    });
+    return scene;
+  }, [scene]);
+
+  const { actions, mixer } = useAnimations(animations, modelRef);
+  
   const velocity = useRef(new THREE.Vector3());
   const targetRotY = useRef(0);
   const jumpVelocity = useRef(0);
   const isGrounded = useRef(true);
+  const wasMoving = useRef(false);
   const setPosition = useHubStore((s) => s.setPosition);
 
   // Texture color space fix
   useEffect(() => {
-    scene.traverse((child) => {
+    clonedScene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
         if (mat?.map) {
@@ -39,7 +56,13 @@ export function CentralHub() {
         }
       }
     });
-  }, [scene]);
+  }, [clonedScene]);
+
+  // Log available animations for debugging
+  useEffect(() => {
+    console.log('Available animations:', animations.map(a => a.name));
+    console.log('Actions:', Object.keys(actions));
+  }, [animations, actions]);
 
   useFrame(({ clock }, delta) => {
     if (!groupRef.current) return;
@@ -52,6 +75,28 @@ export function CentralHub() {
     if (keys['d'] || keys['arrowright']) dir.x += 1;
 
     const isMoving = dir.length() > 0;
+    
+    // Play/stop walk animation based on movement
+    if (isMoving && !wasMoving.current) {
+      // Start walk animation
+      const actionNames = Object.keys(actions);
+      const walkAction = actions[actionNames[0]]; // Use first available animation
+      if (walkAction) {
+        walkAction.reset().fadeIn(0.2).play();
+        walkAction.setLoop(THREE.LoopRepeat, Infinity);
+        walkAction.timeScale = 1.5;
+      }
+      wasMoving.current = true;
+    } else if (!isMoving && wasMoving.current) {
+      // Stop walk animation
+      const actionNames = Object.keys(actions);
+      const walkAction = actions[actionNames[0]];
+      if (walkAction) {
+        walkAction.fadeOut(0.3);
+      }
+      wasMoving.current = false;
+    }
+
     if (isMoving) {
       dir.normalize();
       velocity.current.x = dir.x * SPEED;
@@ -98,21 +143,18 @@ export function CentralHub() {
     // Pulsing glow — 2.5s cycle
     const pulse = Math.sin(clock.elapsedTime * 2.5) * 0.5 + 0.5;
 
-    // Outer glow sphere pulse
     if (glowRef.current) {
       const s = 3.5 + pulse * 1.0;
       glowRef.current.scale.set(s, s, s);
       (glowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.04 + pulse * 0.06;
     }
 
-    // Ground halo ring pulse
     if (haloRef.current) {
       const hs = 2.5 + pulse * 0.8;
       haloRef.current.scale.set(hs, hs, 1);
       (haloRef.current.material as THREE.MeshBasicMaterial).opacity = 0.08 + pulse * 0.12;
     }
 
-    // Light intensity pulse
     if (lightRef.current) {
       lightRef.current.intensity = 4 + pulse * 3;
     }
@@ -120,8 +162,9 @@ export function CentralHub() {
 
   return (
     <group ref={groupRef} position={[0, GROUND_Y, 0]}>
-      {/* Main model — scaled 2x to stand out as commander */}
-      <primitive object={scene} scale={3.0} />
+      <group ref={modelRef}>
+        <primitive object={clonedScene} scale={3.0} />
+      </group>
       {/* Outer glow sphere */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[1, 16, 16]} />
@@ -138,4 +181,4 @@ export function CentralHub() {
   );
 }
 
-useGLTF.preload('/models/macminiclaws.glb');
+useGLTF.preload('/models/macminiclaws_walk.glb');
