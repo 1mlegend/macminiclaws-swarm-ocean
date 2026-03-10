@@ -12,7 +12,7 @@ export function ContractText() {
 
   useFrame(({ clock }) => {
     if (ref.current) {
-      ref.current.position.y = 0.6 + Math.sin(clock.elapsedTime * 0.5) * 0.15;
+      ref.current.position.y = 2.0 + Math.sin(clock.elapsedTime * 0.5) * 0.15;
     }
   });
 
