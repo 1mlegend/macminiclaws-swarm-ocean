@@ -133,17 +133,17 @@ export function CentralHub() {
 
     const pulse = Math.sin(clock.elapsedTime * 2.5) * 0.5 + 0.5;
     if (glowRef.current) {
-      const s = 3.5 + pulse * 1.0;
+      const s = 2.5 + pulse * 0.5;
       glowRef.current.scale.set(s, s, s);
-      (glowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.04 + pulse * 0.06;
+      (glowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.02 + pulse * 0.03;
     }
     if (haloRef.current) {
-      const hs = 2.5 + pulse * 0.8;
+      const hs = 1.8 + pulse * 0.4;
       haloRef.current.scale.set(hs, hs, 1);
-      (haloRef.current.material as THREE.MeshBasicMaterial).opacity = 0.08 + pulse * 0.12;
+      (haloRef.current.material as THREE.MeshBasicMaterial).opacity = 0.04 + pulse * 0.06;
     }
     if (lightRef.current) {
-      lightRef.current.intensity = 4 + pulse * 3;
+      lightRef.current.intensity = 2 + pulse * 1.5;
     }
   });
 
