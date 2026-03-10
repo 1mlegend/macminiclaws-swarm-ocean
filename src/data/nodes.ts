@@ -31,7 +31,7 @@ export function generateNodes(count: number): CrabNode[] {
   return nodes;
 }
 
-export const swarmNodes = generateNodes(128);
+export const swarmNodes = generateNodes(32);
 
 export function getSwarmStats() {
   const online = swarmNodes.filter(n => n.status === 'online').length;

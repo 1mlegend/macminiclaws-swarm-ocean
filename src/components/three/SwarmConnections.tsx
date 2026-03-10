@@ -29,7 +29,7 @@ export function SwarmConnections() {
   }, []);
 
   const hubNodes = useMemo(() => {
-    return swarmNodes.filter(n => n.clusterId !== null && n.status === 'online').slice(0, 12);
+    return swarmNodes.filter(n => n.clusterId !== null && n.status === 'online').slice(0, 8);
   }, []);
 
   const hubPosition = useHubStore((s) => s.position);
