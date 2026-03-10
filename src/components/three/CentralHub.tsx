@@ -24,6 +24,8 @@ export function CentralHub() {
   const { scene } = useGLTF('/models/macminiclaws.glb');
   const velocity = useRef(new THREE.Vector3());
   const targetRotY = useRef(0);
+  const jumpVelocity = useRef(0);
+  const isGrounded = useRef(true);
   const setPosition = useHubStore((s) => s.setPosition);
 
   // Texture color space fix
