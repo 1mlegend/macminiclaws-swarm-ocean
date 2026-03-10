@@ -86,6 +86,8 @@ export function CentralHub() {
     } else {
       pos.y = baseY;
     }
+
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(
       groupRef.current.rotation.y,
       targetRotY.current,
       0.1
