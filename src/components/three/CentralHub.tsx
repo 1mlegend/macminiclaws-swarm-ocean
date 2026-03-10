@@ -52,19 +52,18 @@ export function CentralHub() {
 
     if (isMoving) {
       dir.normalize();
-      // Position update: apply velocity with smooth damping
-      velocity.current.x += dir.x * SPEED * delta;
-      velocity.current.z += dir.z * SPEED * delta;
-      // Rotate shrimp toward movement direction
+      // Direct position update: move proportionally to delta for consistent speed
+      velocity.current.x = dir.x * SPEED;
+      velocity.current.z = dir.z * SPEED;
       targetRotY.current = Math.atan2(dir.x, dir.z);
+    } else {
+      // Smooth velocity damping when not pressing keys
+      velocity.current.multiplyScalar(DAMPING);
     }
 
-    // Smooth velocity damping
-    velocity.current.multiplyScalar(DAMPING);
-
     const pos = groupRef.current.position;
-    pos.x += velocity.current.x * delta * 10;
-    pos.z += velocity.current.z * delta * 10;
+    pos.x += velocity.current.x * delta;
+    pos.z += velocity.current.z * delta;
 
     // Boundary clamp: constrain to playable zone
     pos.x = THREE.MathUtils.clamp(pos.x, -BOUNDS, BOUNDS);
