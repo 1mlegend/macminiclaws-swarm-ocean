@@ -1,10 +1,14 @@
 import { Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import * as THREE from 'three';
+import { useSwarmStore } from '@/stores/swarmStore';
 
 export function ContractText() {
   const ref = useRef<THREE.Group>(null);
+  const setContractOpen = useSwarmStore((s) => s.setContractOpen);
+
+  const handleClick = useCallback(() => setContractOpen(true), [setContractOpen]);
 
   useFrame(({ clock }) => {
     if (ref.current) {
@@ -13,7 +17,14 @@ export function ContractText() {
   });
 
   return (
-    <group ref={ref} position={[0, 0.6, -18]} rotation={[-0.15, 0, 0]}>
+    <group
+      ref={ref}
+      position={[0, 0.6, -18]}
+      rotation={[-0.15, 0, 0]}
+      onClick={handleClick}
+      onPointerOver={() => { document.body.style.cursor = 'pointer'; }}
+      onPointerOut={() => { document.body.style.cursor = 'default'; }}
+    >
       <Text
         fontSize={0.9}
         color="#ff8844"

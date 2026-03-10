@@ -8,6 +8,8 @@ interface SwarmStore {
   setSelectedNodeId: (id: string | null) => void;
   buildingOpen: boolean;
   setBuildingOpen: (open: boolean) => void;
+  contractOpen: boolean;
+  setContractOpen: (open: boolean) => void;
 }
 
 export const useSwarmStore = create<SwarmStore>((set) => ({
@@ -18,4 +20,6 @@ export const useSwarmStore = create<SwarmStore>((set) => ({
   setSelectedNodeId: (id) => set({ selectedNodeId: id }),
   buildingOpen: false,
   setBuildingOpen: (open) => set({ buildingOpen: open }),
+  contractOpen: false,
+  setContractOpen: (open) => set({ contractOpen: open }),
 }));
