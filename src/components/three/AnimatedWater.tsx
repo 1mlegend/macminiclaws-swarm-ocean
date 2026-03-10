@@ -64,7 +64,7 @@ export function AnimatedWater() {
 
   return (
     <mesh position={[0, 0.08, 35]} rotation-x={-Math.PI / 2}>
-      <planeGeometry args={[100, 30, 60, 30]} />
+      <planeGeometry args={[100, 30, 30, 15]} />
       <shaderMaterial
         ref={materialRef}
         vertexShader={waterVertex}
