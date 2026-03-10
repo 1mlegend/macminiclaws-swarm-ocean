@@ -40,6 +40,7 @@ export function OceanScene({ onNodeHover, onNodeClick }: OceanSceneProps) {
         <AnimatedWater />
         <SeaPlants />
         <KrustyBuilding />
+        <ContractText />
         <CentralHub />
         <CrabNodes onNodeHover={onNodeHover} onNodeClick={onNodeClick} />
         <SwarmConnections />
