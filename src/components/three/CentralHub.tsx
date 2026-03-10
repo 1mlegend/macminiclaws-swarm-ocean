@@ -94,9 +94,9 @@ export function CentralHub() {
       <primitive object={scene} scale={1.5} />
       <mesh ref={glowRef}>
         <sphereGeometry args={[1, 16, 16]} />
-        <meshBasicMaterial color="#00bfff" transparent opacity={0.06} />
+        <meshBasicMaterial color="#ff4422" transparent opacity={0.06} />
       </mesh>
-      <pointLight color="#00bfff" intensity={3} distance={15} decay={2} />
+      <pointLight color="#ff4422" intensity={3} distance={15} decay={2} />
     </group>
   );
 }

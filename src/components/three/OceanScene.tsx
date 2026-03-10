@@ -26,8 +26,9 @@ export function OceanScene({ onNodeHover }: OceanSceneProps) {
         gl.toneMappingExposure = 1;
       }}
     >
-      <color attach="background" args={['#0a1628']} />
-      <fog attach="fog" args={['#0a1628', 30, 80]} />
+      {/* Warm sunset sky background */}
+      <color attach="background" args={['#1a0e08']} />
+      <fog attach="fog" args={['#1a0e08', 30, 80]} />
       <Suspense fallback={null}>
         <OceanLighting />
         <OceanFloor />
