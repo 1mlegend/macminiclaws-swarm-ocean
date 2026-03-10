@@ -3,13 +3,14 @@ import { OceanScene } from '@/components/three/OceanScene';
 import { SwarmOverlay } from '@/components/ui/SwarmOverlay';
 import { NodeTooltip } from '@/components/ui/NodeTooltip';
 import { NodeDetailPanel } from '@/components/ui/NodeDetailPanel';
+import { BuildingPopup } from '@/components/ui/BuildingPopup';
 import { CrabNode, swarmNodes } from '@/data/nodes';
 import { useSwarmStore } from '@/stores/swarmStore';
 
 const Index = () => {
   const [hoveredNode, setHoveredNode] = useState<CrabNode | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
-  const { selectedNodeId, setSelectedNodeId } = useSwarmStore();
+  const { selectedNodeId, setSelectedNodeId, buildingOpen, setBuildingOpen } = useSwarmStore();
 
   const handleNodeHover = useCallback((node: CrabNode | null, pos: { x: number; y: number } | null) => {
     setHoveredNode(node);
@@ -31,6 +32,9 @@ const Index = () => {
       )}
       {selectedNode && (
         <NodeDetailPanel node={selectedNode} onClose={() => setSelectedNodeId(null)} />
+      )}
+      {buildingOpen && (
+        <BuildingPopup onClose={() => setBuildingOpen(false)} />
       )}
     </div>
   );
