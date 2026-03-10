@@ -88,6 +88,19 @@ export function SwarmOverlay() {
           </div>
         )}
       </div>
+
+      {/* Bottom Right — Controls hint */}
+      <div className="fixed bottom-6 right-6 z-10 bg-card/50 backdrop-blur-sm border border-border/50 rounded-md px-4 py-3 text-center">
+        <div className="flex items-center gap-1 justify-center mb-1.5">
+          <kbd className="px-1.5 py-0.5 rounded border border-border/60 bg-card/80 text-[10px] text-muted-foreground font-mono">↑</kbd>
+        </div>
+        <div className="flex items-center gap-1 justify-center">
+          <kbd className="px-1.5 py-0.5 rounded border border-border/60 bg-card/80 text-[10px] text-muted-foreground font-mono">←</kbd>
+          <kbd className="px-1.5 py-0.5 rounded border border-border/60 bg-card/80 text-[10px] text-muted-foreground font-mono">↓</kbd>
+          <kbd className="px-1.5 py-0.5 rounded border border-border/60 bg-card/80 text-[10px] text-muted-foreground font-mono">→</kbd>
+        </div>
+        <p className="text-[9px] text-muted-foreground mt-1.5 tracking-wide">Move camera</p>
+      </div>
     </>
   );
 }
