@@ -12,6 +12,14 @@ import { AnimatedWater } from './AnimatedWater';
 import { KrustyBuilding } from './KrustyBuilding';
 import { ContractText } from './ContractText';
 import { MoltLobster } from './MoltLobster';
+import { CrabNests } from './CrabNests';
+import { EnergySources } from './EnergySources';
+import { NetworkBeams } from './NetworkBeams';
+import { AntennaTowers } from './AntennaTowers';
+import { ZoneLabels } from './ZoneLabels';
+import { ComputeVolcano } from './ComputeVolcano';
+import { EasterEggs } from './EasterEggs';
+import { ConstructionSites } from './ConstructionSites';
 import { CrabNode } from '@/data/nodes';
 
 interface OceanSceneProps {
@@ -43,6 +51,14 @@ export function OceanScene({ onNodeHover, onNodeClick }: OceanSceneProps) {
         <KrustyBuilding />
         <ContractText />
         <MoltLobster />
+        <CrabNests />
+        <EnergySources />
+        <NetworkBeams />
+        <AntennaTowers />
+        <ZoneLabels />
+        <ComputeVolcano />
+        <ConstructionSites />
+        <EasterEggs />
         <CentralHub />
         <CrabNodes onNodeHover={onNodeHover} onNodeClick={onNodeClick} />
         <SwarmConnections />
