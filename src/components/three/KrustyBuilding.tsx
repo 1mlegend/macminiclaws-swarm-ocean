@@ -1,8 +1,11 @@
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { useSwarmStore } from '@/stores/swarmStore';
 
 export function KrustyBuilding() {
+  const setBuildingOpen = useSwarmStore((s) => s.setBuildingOpen);
+  const handleClick = useCallback(() => setBuildingOpen(true), [setBuildingOpen]);
   const signRef = useRef<THREE.Group>(null);
   const flagsRef = useRef<THREE.Group>(null);
 
@@ -21,7 +24,7 @@ export function KrustyBuilding() {
   });
 
   return (
-    <group position={[-12, 0, -10]}>
+    <group position={[-12, 0, -10]} onClick={handleClick} onPointerOver={() => { document.body.style.cursor = 'pointer'; }} onPointerOut={() => { document.body.style.cursor = 'default'; }}>
       {/* Main barrel body — horizontal cylinder */}
       <group rotation={[0, 0, Math.PI / 2]}>
         <mesh position={[0.8, 0, 0]}>
