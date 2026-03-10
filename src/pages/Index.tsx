@@ -1,12 +1,25 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useCallback } from 'react';
+import { OceanScene } from '@/components/three/OceanScene';
+import { SwarmOverlay } from '@/components/ui/SwarmOverlay';
+import { NodeTooltip } from '@/components/ui/NodeTooltip';
+import { CrabNode } from '@/data/nodes';
 
 const Index = () => {
+  const [hoveredNode, setHoveredNode] = useState<CrabNode | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+
+  const handleNodeHover = useCallback((node: CrabNode | null, pos: { x: number; y: number } | null) => {
+    setHoveredNode(node);
+    setTooltipPos(pos);
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="w-screen h-screen overflow-hidden bg-background">
+      <OceanScene onNodeHover={handleNodeHover} />
+      <SwarmOverlay />
+      {hoveredNode && tooltipPos && (
+        <NodeTooltip node={hoveredNode} position={tooltipPos} />
+      )}
     </div>
   );
 };
