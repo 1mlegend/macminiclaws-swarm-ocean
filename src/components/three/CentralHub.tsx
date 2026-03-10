@@ -7,7 +7,7 @@ import { useHubStore } from '@/stores/hubStore';
 // Movement input: track pressed keys
 const keys: Record<string, boolean> = {};
 if (typeof window !== 'undefined') {
-  window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
+  window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; if (e.key === ' ') e.preventDefault(); });
   window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
 }
 
