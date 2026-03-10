@@ -11,6 +11,7 @@ import { SunsetSky } from './SunsetSky';
 import { AnimatedWater } from './AnimatedWater';
 import { KrustyBuilding } from './KrustyBuilding';
 import { ContractText } from './ContractText';
+import { MoltLobster } from './MoltLobster';
 import { CrabNode } from '@/data/nodes';
 
 interface OceanSceneProps {
@@ -41,6 +42,7 @@ export function OceanScene({ onNodeHover, onNodeClick }: OceanSceneProps) {
         <SeaPlants />
         <KrustyBuilding />
         <ContractText />
+        <MoltLobster />
         <CentralHub />
         <CrabNodes onNodeHover={onNodeHover} onNodeClick={onNodeClick} />
         <SwarmConnections />
