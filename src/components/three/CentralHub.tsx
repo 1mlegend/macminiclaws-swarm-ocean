@@ -150,7 +150,7 @@ export function CentralHub() {
   return (
     <group ref={groupRef} position={[0, GROUND_Y, 0]}>
       <group ref={modelRef}>
-        <primitive object={scene} scale={200} />
+        <primitive object={scene} scale={100} />
       </group>
       <mesh ref={glowRef}>
         <sphereGeometry args={[1, 16, 16]} />
