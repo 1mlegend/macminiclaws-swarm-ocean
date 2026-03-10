@@ -7,7 +7,7 @@ import { useHubStore } from '@/stores/hubStore';
 // Movement input: track pressed keys
 const keys: Record<string, boolean> = {};
 if (typeof window !== 'undefined') {
-  window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
+  window.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; if (e.key === ' ') e.preventDefault(); });
   window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
 }
 
@@ -24,6 +24,8 @@ export function CentralHub() {
   const { scene } = useGLTF('/models/macminiclaws.glb');
   const velocity = useRef(new THREE.Vector3());
   const targetRotY = useRef(0);
+  const jumpVelocity = useRef(0);
+  const isGrounded = useRef(true);
   const setPosition = useHubStore((s) => s.setPosition);
 
   // Texture color space fix
@@ -64,7 +66,26 @@ export function CentralHub() {
     pos.z += velocity.current.z * delta;
     pos.x = THREE.MathUtils.clamp(pos.x, -BOUNDS, BOUNDS);
     pos.z = THREE.MathUtils.clamp(pos.z, -BOUNDS, BOUNDS);
-    pos.y = GROUND_Y + Math.sin(clock.elapsedTime * 0.5) * 0.15;
+
+    // Jump logic
+    if (keys[' '] && isGrounded.current) {
+      jumpVelocity.current = 8;
+      isGrounded.current = false;
+    }
+
+    const baseY = GROUND_Y + Math.sin(clock.elapsedTime * 0.5) * 0.15;
+
+    if (!isGrounded.current) {
+      jumpVelocity.current -= 20 * delta; // gravity
+      pos.y += jumpVelocity.current * delta;
+      if (pos.y <= baseY) {
+        pos.y = baseY;
+        isGrounded.current = true;
+        jumpVelocity.current = 0;
+      }
+    } else {
+      pos.y = baseY;
+    }
 
     groupRef.current.rotation.y = THREE.MathUtils.lerp(
       groupRef.current.rotation.y,

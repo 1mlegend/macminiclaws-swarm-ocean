@@ -100,6 +100,10 @@ export function SwarmOverlay() {
           <kbd className="px-1.5 py-0.5 rounded border border-border/60 bg-card/80 text-[10px] text-muted-foreground font-mono">→</kbd>
         </div>
         <p className="text-[9px] text-muted-foreground mt-1.5 tracking-wide">Move camera</p>
+        <div className="flex items-center gap-1 justify-center mt-2">
+          <kbd className="px-3 py-0.5 rounded border border-border/60 bg-card/80 text-[10px] text-muted-foreground font-mono">Space</kbd>
+        </div>
+        <p className="text-[9px] text-muted-foreground mt-1 tracking-wide">Jump</p>
       </div>
     </>
   );
