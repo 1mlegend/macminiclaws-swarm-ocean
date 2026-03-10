@@ -18,8 +18,15 @@ export function OceanScene({ onNodeHover }: OceanSceneProps) {
     <Canvas
       camera={{ position: [15, 12, 15], fov: 55, near: 0.1, far: 200 }}
       style={{ position: 'fixed', inset: 0 }}
-      gl={{ antialias: true, alpha: false }}
+      gl={{ antialias: true, alpha: false, toneMapping: 0 /* NoToneMapping — preserves original GLB colors */ }}
       dpr={[1, 1.5]}
+      onCreated={({ gl }) => {
+        // Color space fix: ensure sRGB output so textures render faithfully
+        gl.outputColorSpace = 'srgb';
+        // Tone mapping fix: disable tone mapping to prevent color alteration
+        gl.toneMapping = 0; // THREE.NoToneMapping
+        gl.toneMappingExposure = 1;
+      }}
     >
       <color attach="background" args={['#0a1628']} />
       <fog attach="fog" args={['#0a1628', 30, 80]} />

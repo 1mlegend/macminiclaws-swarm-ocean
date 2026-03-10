@@ -12,12 +12,14 @@ export function OceanLighting() {
   });
 
   return (
+    {/* Lighting fix: neutral white lights to preserve original GLB colors */}
     <>
-      <ambientLight intensity={0.15} color="#1a3a5c" />
-      <directionalLight position={[10, 20, 5]} intensity={0.4} color="#4a9eff" />
-      <pointLight ref={lightRef} position={[0, 8, 0]} intensity={1.5} color="#00bfff" distance={40} decay={2} />
-      <pointLight position={[-15, 5, -15]} intensity={0.5} color="#0066cc" distance={30} decay={2} />
-      <pointLight position={[15, 5, 15]} intensity={0.5} color="#0088ff" distance={30} decay={2} />
+      <ambientLight intensity={0.6} color="#ffffff" />
+      <directionalLight position={[10, 20, 5]} intensity={0.8} color="#ffffff" />
+      <pointLight ref={lightRef} position={[0, 8, 0]} intensity={1.2} color="#ffffff" distance={40} decay={2} />
+      {/* Subtle blue fill lights — low intensity so they don't tint the model */}
+      <pointLight position={[-15, 5, -15]} intensity={0.2} color="#6699cc" distance={30} decay={2} />
+      <pointLight position={[15, 5, 15]} intensity={0.2} color="#6699cc" distance={30} decay={2} />
     </>
   );
 }

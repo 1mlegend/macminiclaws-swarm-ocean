@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -7,6 +7,20 @@ export function CentralHub() {
   const groupRef = useRef<THREE.Group>(null);
   const glowRef = useRef<THREE.Mesh>(null);
   const { scene } = useGLTF('/models/macminiclaws.glb');
+
+  // Texture color space fix: ensure base color maps use sRGB
+  useEffect(() => {
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        const mat = mesh.material as THREE.MeshStandardMaterial;
+        if (mat?.map) {
+          mat.map.colorSpace = 'srgb';
+          mat.needsUpdate = true;
+        }
+      }
+    });
+  }, [scene]);
 
   useFrame(({ clock }) => {
     if (groupRef.current) {
