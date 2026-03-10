@@ -16,15 +16,18 @@ export function OceanFloor() {
     return geo;
   }, []);
 
-  // Rocks — warm sandstone tones
+  // Warm sandstone rocks
   const rocks = useMemo(() => {
     const arr = [];
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 50; i++) {
       const s = Math.random();
+      const colors = ['#a08050', '#8a6a40', '#c4a060', '#7a6040', '#b09060'];
       arr.push({
         pos: [(Math.random() - 0.5) * 60, 0.1 + s * 0.3, (Math.random() - 0.5) * 60] as [number, number, number],
         scale: [0.3 + s, 0.2 + s * 0.5, 0.3 + s] as [number, number, number],
         rot: Math.random() * Math.PI,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        roughness: 0.75 + Math.random() * 0.2,
       });
     }
     return arr;
@@ -36,15 +39,11 @@ export function OceanFloor() {
       <mesh ref={meshRef} geometry={geometry} rotation-x={-Math.PI / 2} receiveShadow>
         <meshStandardMaterial color="#c4a56e" roughness={0.95} metalness={0.05} />
       </mesh>
-      {/* Shallow water zone — one side of the map */}
-      <mesh position={[0, 0.05, 35]} rotation-x={-Math.PI / 2}>
-        <planeGeometry args={[100, 30]} />
-        <meshStandardMaterial color="#2288aa" roughness={0.3} metalness={0.1} transparent opacity={0.35} />
-      </mesh>
+      {/* Rocks with warm sandstone/terracotta variation */}
       {rocks.map((rock, i) => (
         <mesh key={i} position={rock.pos} scale={rock.scale} rotation-y={rock.rot}>
           <dodecahedronGeometry args={[1, 0]} />
-          <meshStandardMaterial color="#8a7a5a" roughness={0.85} metalness={0.1} />
+          <meshStandardMaterial color={rock.color} roughness={rock.roughness} metalness={0.08} />
         </mesh>
       ))}
     </>

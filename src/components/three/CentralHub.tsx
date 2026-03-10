@@ -11,7 +11,6 @@ if (typeof window !== 'undefined') {
   window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
 }
 
-// Boundary clamp: keep shrimp within the seabed area
 const BOUNDS = 35;
 const GROUND_Y = 0.8;
 const SPEED = 6;
@@ -20,12 +19,14 @@ const DAMPING = 0.85;
 export function CentralHub() {
   const groupRef = useRef<THREE.Group>(null);
   const glowRef = useRef<THREE.Mesh>(null);
+  const haloRef = useRef<THREE.Mesh>(null);
+  const lightRef = useRef<THREE.PointLight>(null);
   const { scene } = useGLTF('/models/macminiclaws.glb');
   const velocity = useRef(new THREE.Vector3());
   const targetRotY = useRef(0);
   const setPosition = useHubStore((s) => s.setPosition);
 
-  // Texture color space fix: ensure base color maps use sRGB
+  // Texture color space fix
   useEffect(() => {
     scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
@@ -41,7 +42,7 @@ export function CentralHub() {
   useFrame(({ clock }, delta) => {
     if (!groupRef.current) return;
 
-    // Movement input: WASD / arrow keys
+    // Movement input
     const dir = new THREE.Vector3();
     if (keys['w'] || keys['arrowup']) dir.z -= 1;
     if (keys['s'] || keys['arrowdown']) dir.z += 1;
@@ -49,54 +50,69 @@ export function CentralHub() {
     if (keys['d'] || keys['arrowright']) dir.x += 1;
 
     const isMoving = dir.length() > 0;
-
     if (isMoving) {
       dir.normalize();
-      // Direct position update: move proportionally to delta for consistent speed
       velocity.current.x = dir.x * SPEED;
       velocity.current.z = dir.z * SPEED;
       targetRotY.current = Math.atan2(dir.x, dir.z);
     } else {
-      // Smooth velocity damping when not pressing keys
       velocity.current.multiplyScalar(DAMPING);
     }
 
     const pos = groupRef.current.position;
     pos.x += velocity.current.x * delta;
     pos.z += velocity.current.z * delta;
-
-    // Boundary clamp: constrain to playable zone
     pos.x = THREE.MathUtils.clamp(pos.x, -BOUNDS, BOUNDS);
     pos.z = THREE.MathUtils.clamp(pos.z, -BOUNDS, BOUNDS);
-
-    // Keep slightly above ground + subtle bob
     pos.y = GROUND_Y + Math.sin(clock.elapsedTime * 0.5) * 0.15;
 
-    // Smooth rotation toward movement direction
     groupRef.current.rotation.y = THREE.MathUtils.lerp(
       groupRef.current.rotation.y,
       targetRotY.current,
       0.1
     );
 
-    // Share position with store for camera follow & swarm connections
     setPosition([pos.x, pos.y, pos.z]);
 
-    // Glow pulse
+    // Pulsing glow — 2.5s cycle
+    const pulse = Math.sin(clock.elapsedTime * 2.5) * 0.5 + 0.5;
+
+    // Outer glow sphere pulse
     if (glowRef.current) {
-      const s = 3 + Math.sin(clock.elapsedTime) * 0.3;
+      const s = 3.5 + pulse * 1.0;
       glowRef.current.scale.set(s, s, s);
+      (glowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.04 + pulse * 0.06;
+    }
+
+    // Ground halo ring pulse
+    if (haloRef.current) {
+      const hs = 2.5 + pulse * 0.8;
+      haloRef.current.scale.set(hs, hs, 1);
+      (haloRef.current.material as THREE.MeshBasicMaterial).opacity = 0.08 + pulse * 0.12;
+    }
+
+    // Light intensity pulse
+    if (lightRef.current) {
+      lightRef.current.intensity = 4 + pulse * 3;
     }
   });
 
   return (
     <group ref={groupRef} position={[0, GROUND_Y, 0]}>
-      <primitive object={scene} scale={1.5} />
+      {/* Main model — scaled 2x to stand out as commander */}
+      <primitive object={scene} scale={3.0} />
+      {/* Outer glow sphere */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[1, 16, 16]} />
         <meshBasicMaterial color="#ff4422" transparent opacity={0.06} />
       </mesh>
-      <pointLight color="#ff4422" intensity={3} distance={15} decay={2} />
+      {/* Ground halo ring */}
+      <mesh ref={haloRef} position={[0, -0.6, 0]} rotation-x={-Math.PI / 2}>
+        <ringGeometry args={[1.5, 3, 32]} />
+        <meshBasicMaterial color="#ff3311" transparent opacity={0.1} side={THREE.DoubleSide} />
+      </mesh>
+      {/* Strong pulsing point light */}
+      <pointLight ref={lightRef} color="#ff4422" intensity={5} distance={20} decay={2} />
     </group>
   );
 }

@@ -7,13 +7,16 @@ import { SwarmConnections } from './SwarmConnections';
 import { OceanLighting } from './OceanLighting';
 import { SeaPlants } from './SeaPlants';
 import { CameraFollow } from './CameraFollow';
+import { SunsetSky } from './SunsetSky';
+import { AnimatedWater } from './AnimatedWater';
 import { CrabNode } from '@/data/nodes';
 
 interface OceanSceneProps {
   onNodeHover: (node: CrabNode | null, screenPos: { x: number; y: number } | null) => void;
+  onNodeClick: (node: CrabNode) => void;
 }
 
-export function OceanScene({ onNodeHover }: OceanSceneProps) {
+export function OceanScene({ onNodeHover, onNodeClick }: OceanSceneProps) {
   return (
     <Canvas
       camera={{ position: [15, 12, 15], fov: 55, near: 0.1, far: 200 }}
@@ -26,15 +29,16 @@ export function OceanScene({ onNodeHover }: OceanSceneProps) {
         gl.toneMappingExposure = 1;
       }}
     >
-      {/* Warm sunset sky background */}
-      <color attach="background" args={['#1a0e08']} />
-      <fog attach="fog" args={['#1a0e08', 30, 80]} />
+      {/* Warm fog — matches sunset sky */}
+      <fog attach="fog" args={['#2a1008', 30, 120]} />
       <Suspense fallback={null}>
+        <SunsetSky />
         <OceanLighting />
         <OceanFloor />
+        <AnimatedWater />
         <SeaPlants />
         <CentralHub />
-        <CrabNodes onNodeHover={onNodeHover} />
+        <CrabNodes onNodeHover={onNodeHover} onNodeClick={onNodeClick} />
         <SwarmConnections />
       </Suspense>
       <CameraFollow />
