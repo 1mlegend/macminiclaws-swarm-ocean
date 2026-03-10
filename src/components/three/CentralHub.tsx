@@ -31,6 +31,19 @@ export function CentralHub() {
   const walkPhase = useRef(0);
   const setPosition = useHubStore((s) => s.setPosition);
 
+  // Start animation immediately and keep it playing (paused when idle)
+  useEffect(() => {
+    const actionNames = Object.keys(actions);
+    if (actionNames.length > 0) {
+      const walkAction = actions[actionNames[0]];
+      if (walkAction) {
+        walkAction.play();
+        walkAction.setLoop(THREE.LoopRepeat, Infinity);
+        walkAction.timeScale = 0; // Start paused at first frame
+      }
+    }
+  }, [actions]);
+
   useEffect(() => {
     scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
@@ -63,30 +76,16 @@ export function CentralHub() {
 
     const isMoving = dir.length() > 0;
 
-    // Play/stop walk animation
+    // Control walk animation speed (always playing, just change timeScale)
     const actionNames = Object.keys(actions);
     if (actionNames.length > 0) {
       const walkAction = actions[actionNames[0]];
       if (walkAction) {
-        if (isMoving && !wasMoving.current) {
-          walkAction.reset().fadeIn(0.2).play();
-          walkAction.setLoop(THREE.LoopRepeat, Infinity);
-          walkAction.timeScale = 1.5;
-        } else if (!isMoving && wasMoving.current) {
-          walkAction.fadeOut(0.3);
+        if (isMoving) {
+          walkAction.timeScale = THREE.MathUtils.lerp(walkAction.timeScale, 1.5, 0.1);
+        } else {
+          walkAction.timeScale = THREE.MathUtils.lerp(walkAction.timeScale, 0, 0.15);
         }
-      }
-    }
-    wasMoving.current = isMoving;
-
-    // Procedural walk backup (bobbing)
-    if (modelRef.current) {
-      if (isMoving) {
-        walkPhase.current += delta * 12;
-        modelRef.current.position.y = Math.sin(walkPhase.current) * 0.1;
-      } else {
-        walkPhase.current = 0;
-        modelRef.current.position.y = THREE.MathUtils.lerp(modelRef.current.position.y, 0, 0.1);
       }
     }
 
