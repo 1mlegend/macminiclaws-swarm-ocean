@@ -19,7 +19,6 @@ export function ContractText() {
         color="#ff8844"
         anchorX="center"
         anchorY="middle"
-        font="/fonts/inter-bold.woff"
         outlineWidth={0.03}
         outlineColor="#1a0800"
       >
@@ -31,7 +30,6 @@ export function ContractText() {
         color="#cca070"
         anchorX="center"
         anchorY="middle"
-        font="/fonts/inter-bold.woff"
         outlineWidth={0.02}
         outlineColor="#1a0800"
         maxWidth={30}
