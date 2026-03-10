@@ -1,6 +1,6 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { useGLTF, useAnimations } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { useHubStore } from '@/stores/hubStore';
 
@@ -18,20 +18,16 @@ const DAMPING = 0.85;
 
 export function CentralHub() {
   const groupRef = useRef<THREE.Group>(null);
-  const modelRef = useRef<THREE.Group>(null);
+  const modelWrapperRef = useRef<THREE.Group>(null);
   const glowRef = useRef<THREE.Mesh>(null);
   const haloRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
-
-  // Load animated model
-  const { scene, animations } = useGLTF('/models/macminiclaws_walk.glb');
-  const { actions } = useAnimations(animations, modelRef);
-
+  const { scene } = useGLTF('/models/macminiclaws.glb');
   const velocity = useRef(new THREE.Vector3());
   const targetRotY = useRef(0);
   const jumpVelocity = useRef(0);
   const isGrounded = useRef(true);
-  const wasMoving = useRef(false);
+  const walkPhase = useRef(0);
   const setPosition = useHubStore((s) => s.setPosition);
 
   // Texture color space fix
@@ -47,18 +43,6 @@ export function CentralHub() {
     });
   }, [scene]);
 
-  // Log animations + auto-scale debug
-  useEffect(() => {
-    console.log('Walk animations:', animations.map(a => a.name));
-    console.log('Actions:', Object.keys(actions));
-    
-    // Compute bounding box to auto-detect scale
-    const box = new THREE.Box3().setFromObject(scene);
-    const size = new THREE.Vector3();
-    box.getSize(size);
-    console.log('Model bounding box size:', size.x, size.y, size.z);
-  }, [scene, animations, actions]);
-
   useFrame(({ clock }, delta) => {
     if (!groupRef.current) return;
 
@@ -70,30 +54,6 @@ export function CentralHub() {
     if (keys['d'] || keys['arrowright']) dir.x += 1;
 
     const isMoving = dir.length() > 0;
-
-    // Play/stop walk animation based on movement
-    if (isMoving && !wasMoving.current) {
-      const actionNames = Object.keys(actions);
-      if (actionNames.length > 0) {
-        const walkAction = actions[actionNames[0]];
-        if (walkAction) {
-          walkAction.reset().fadeIn(0.2).play();
-          walkAction.setLoop(THREE.LoopRepeat, Infinity);
-          walkAction.timeScale = 1.5;
-        }
-      }
-      wasMoving.current = true;
-    } else if (!isMoving && wasMoving.current) {
-      const actionNames = Object.keys(actions);
-      if (actionNames.length > 0) {
-        const walkAction = actions[actionNames[0]];
-        if (walkAction) {
-          walkAction.fadeOut(0.3);
-        }
-      }
-      wasMoving.current = false;
-    }
-
     if (isMoving) {
       dir.normalize();
       velocity.current.x = dir.x * SPEED;
@@ -118,7 +78,7 @@ export function CentralHub() {
     const baseY = GROUND_Y + Math.sin(clock.elapsedTime * 0.5) * 0.15;
 
     if (!isGrounded.current) {
-      jumpVelocity.current -= 20 * delta;
+      jumpVelocity.current -= 20 * delta; // gravity
       pos.y += jumpVelocity.current * delta;
       if (pos.y <= baseY) {
         pos.y = baseY;
@@ -135,9 +95,28 @@ export function CentralHub() {
       0.1
     );
 
+    // Walk animation — bobbing + tilting when moving
+    if (modelWrapperRef.current) {
+      if (isMoving) {
+        walkPhase.current += delta * 12; // walk speed
+        const bob = Math.sin(walkPhase.current) * 0.15;
+        const tilt = Math.sin(walkPhase.current * 0.5) * 0.08;
+        const sway = Math.cos(walkPhase.current) * 0.05;
+        modelWrapperRef.current.position.y = bob;
+        modelWrapperRef.current.rotation.z = tilt;
+        modelWrapperRef.current.rotation.x = sway;
+      } else {
+        // Smooth return to idle
+        walkPhase.current = 0;
+        modelWrapperRef.current.position.y = THREE.MathUtils.lerp(modelWrapperRef.current.position.y, 0, 0.1);
+        modelWrapperRef.current.rotation.z = THREE.MathUtils.lerp(modelWrapperRef.current.rotation.z, 0, 0.1);
+        modelWrapperRef.current.rotation.x = THREE.MathUtils.lerp(modelWrapperRef.current.rotation.x, 0, 0.1);
+      }
+    }
+
     setPosition([pos.x, pos.y, pos.z]);
 
-    // Pulsing glow
+    // Pulsing glow — 2.5s cycle
     const pulse = Math.sin(clock.elapsedTime * 2.5) * 0.5 + 0.5;
 
     if (glowRef.current) {
@@ -159,7 +138,7 @@ export function CentralHub() {
 
   return (
     <group ref={groupRef} position={[0, GROUND_Y, 0]}>
-      <group ref={modelRef}>
+      <group ref={modelWrapperRef}>
         <primitive object={scene} scale={3.0} />
       </group>
       <mesh ref={glowRef}>
@@ -175,4 +154,4 @@ export function CentralHub() {
   );
 }
 
-useGLTF.preload('/models/macminiclaws_walk.glb');
+useGLTF.preload('/models/macminiclaws.glb');
