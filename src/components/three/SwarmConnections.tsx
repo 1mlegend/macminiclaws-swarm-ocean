@@ -1,19 +1,19 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { swarmNodes } from '@/data/nodes';
 import { Line } from '@react-three/drei';
 import { useHubStore } from '@/stores/hubStore';
-import { useRef } from 'react';
+import { useSwarmStore } from '@/stores/swarmStore';
 
 export function SwarmConnections() {
   const groupRef = useRef<THREE.Group>(null);
+  const shockwaveRef = useRef<THREE.Mesh>(null);
 
   // Static node-to-node connections
   const nodeConnections = useMemo(() => {
     const conns: { from: [number, number, number]; to: [number, number, number] }[] = [];
     const clusteredNodes = swarmNodes.filter(n => n.clusterId !== null && n.status === 'online');
-
     for (let i = 0; i < clusteredNodes.length; i++) {
       for (let j = i + 1; j < clusteredNodes.length; j++) {
         if (clusteredNodes[i].clusterId === clusteredNodes[j].clusterId) {
@@ -28,13 +28,57 @@ export function SwarmConnections() {
     return conns;
   }, []);
 
-  // Hub-connected nodes (update dynamically with hub position)
   const hubNodes = useMemo(() => {
-    const clusteredNodes = swarmNodes.filter(n => n.clusterId !== null && n.status === 'online');
-    return clusteredNodes.slice(0, 12);
+    return swarmNodes.filter(n => n.clusterId !== null && n.status === 'online').slice(0, 12);
   }, []);
 
   const hubPosition = useHubStore((s) => s.position);
+  const { swarmActive, activeCluster, setSwarm } = useSwarmStore();
+
+  // Swarm mode: activate random cluster every 15-20s
+  useEffect(() => {
+    const trigger = () => {
+      const onlineNodes = swarmNodes.filter(n => n.status === 'online');
+      const count = 5 + Math.floor(Math.random() * 6);
+      const startIdx = Math.floor(Math.random() * Math.max(1, onlineNodes.length - count));
+      const selected = onlineNodes.slice(startIdx, startIdx + count).map(n => n.id);
+      setSwarm(selected, true);
+
+      // Reset after 5 seconds
+      setTimeout(() => setSwarm([], false), 5000);
+    };
+
+    const interval = setInterval(trigger, 15000 + Math.random() * 5000);
+    // Initial trigger after 3s
+    const initial = setTimeout(trigger, 3000);
+    return () => { clearInterval(interval); clearTimeout(initial); };
+  }, [setSwarm]);
+
+  // Shockwave animation
+  useFrame(({ clock }) => {
+    if (shockwaveRef.current) {
+      if (swarmActive) {
+        const t = (clock.elapsedTime % 5) / 5;
+        const s = 1 + t * 15;
+        shockwaveRef.current.scale.set(s, s, 1);
+        (shockwaveRef.current.material as THREE.MeshBasicMaterial).opacity = 0.3 * (1 - t);
+        shockwaveRef.current.visible = true;
+      } else {
+        shockwaveRef.current.visible = false;
+      }
+    }
+  });
+
+  // Compute swarm cluster center for shockwave
+  const clusterCenter = useMemo(() => {
+    if (activeCluster.length === 0) return [0, 0.2, 0] as [number, number, number];
+    const nodes = swarmNodes.filter(n => activeCluster.includes(n.id));
+    const avg = nodes.reduce(
+      (acc, n) => [acc[0] + n.position[0], acc[1] + n.position[1], acc[2] + n.position[2]],
+      [0, 0, 0]
+    );
+    return [avg[0] / nodes.length, 0.2, avg[2] / nodes.length] as [number, number, number];
+  }, [activeCluster]);
 
   return (
     <group ref={groupRef}>
@@ -44,6 +88,11 @@ export function SwarmConnections() {
       {hubNodes.map((node, i) => (
         <Line key={`h-${i}`} points={[node.position, hubPosition]} color="#ff5533" lineWidth={1} transparent opacity={0.2} />
       ))}
+      {/* Shockwave ring for swarm activation */}
+      <mesh ref={shockwaveRef} position={clusterCenter} rotation-x={-Math.PI / 2} visible={false}>
+        <ringGeometry args={[0.5, 1, 32]} />
+        <meshBasicMaterial color="#ff4422" transparent opacity={0.3} side={THREE.DoubleSide} />
+      </mesh>
     </group>
   );
 }
