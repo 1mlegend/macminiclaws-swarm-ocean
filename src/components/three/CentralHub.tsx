@@ -14,8 +14,8 @@ if (typeof window !== 'undefined') {
 // Boundary clamp: keep shrimp within the seabed area
 const BOUNDS = 35;
 const GROUND_Y = 0.8;
-const SPEED = 8;
-const DAMPING = 0.88;
+const SPEED = 2;
+const DAMPING = 0.92;
 
 export function CentralHub() {
   const groupRef = useRef<THREE.Group>(null);
