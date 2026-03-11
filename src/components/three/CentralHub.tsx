@@ -160,7 +160,7 @@ export function CentralHub() {
         <ringGeometry args={[1.5, 3, 32]} />
         <meshBasicMaterial color="#ff3311" transparent opacity={0.1} side={THREE.DoubleSide} />
       </mesh>
-      <pointLight ref={lightRef} color="#ff4422" intensity={5} distance={20} decay={2} />
+      <pointLight ref={lightRef} color="#ff4422" intensity={1.5} distance={12} decay={2} />
     </group>
   );
 }
