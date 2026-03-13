@@ -9,6 +9,7 @@ import { useSwarmStore } from '@/stores/swarmStore';
 export function SwarmConnections() {
   const groupRef = useRef<THREE.Group>(null);
   const shockwaveRef = useRef<THREE.Mesh>(null);
+  const lineRefs = useRef<Map<number, THREE.LineBasicMaterial>>(new Map());
 
   // Static node-to-node connections
   const nodeConnections = useMemo(() => {
@@ -49,19 +50,18 @@ export function SwarmConnections() {
     };
 
     const interval = setInterval(trigger, 15000 + Math.random() * 5000);
-    // Initial trigger after 3s
     const initial = setTimeout(trigger, 3000);
     return () => { clearInterval(interval); clearTimeout(initial); };
   }, [setSwarm]);
 
-  // Shockwave animation
+  // Shockwave + animated line pulse
   useFrame(({ clock }) => {
     if (shockwaveRef.current) {
       if (swarmActive) {
         const t = (clock.elapsedTime % 5) / 5;
         const s = 1 + t * 15;
         shockwaveRef.current.scale.set(s, s, 1);
-        (shockwaveRef.current.material as THREE.MeshBasicMaterial).opacity = 0.3 * (1 - t);
+        (shockwaveRef.current.material as THREE.MeshBasicMaterial).opacity = 0.35 * (1 - t);
         shockwaveRef.current.visible = true;
       } else {
         shockwaveRef.current.visible = false;
@@ -82,16 +82,55 @@ export function SwarmConnections() {
 
   return (
     <group ref={groupRef}>
+      {/* Node-to-node connections — thicker, with glow */}
       {nodeConnections.map((conn, i) => (
-        <Line key={`n-${i}`} points={[conn.from, conn.to]} color="#ff5533" lineWidth={1} transparent opacity={0.2} />
+        <group key={`n-${i}`}>
+          <Line
+            points={[conn.from, conn.to]}
+            color="#ff5533"
+            lineWidth={2.5}
+            transparent
+            opacity={0.35}
+          />
+          {/* Glow line underneath */}
+          <Line
+            points={[
+              [conn.from[0], conn.from[1] - 0.01, conn.from[2]],
+              [conn.to[0], conn.to[1] - 0.01, conn.to[2]],
+            ]}
+            color="#ff3311"
+            lineWidth={4}
+            transparent
+            opacity={0.08}
+          />
+        </group>
       ))}
+      {/* Hub connections — thicker */}
       {hubNodes.map((node, i) => (
-        <Line key={`h-${i}`} points={[node.position, hubPosition]} color="#ff5533" lineWidth={1} transparent opacity={0.2} />
+        <group key={`h-${i}`}>
+          <Line
+            points={[node.position, hubPosition]}
+            color="#ff5533"
+            lineWidth={2}
+            transparent
+            opacity={0.3}
+          />
+          <Line
+            points={[
+              [node.position[0], node.position[1] - 0.01, node.position[2]],
+              [hubPosition[0], hubPosition[1] - 0.01, hubPosition[2]],
+            ]}
+            color="#ff3311"
+            lineWidth={3.5}
+            transparent
+            opacity={0.06}
+          />
+        </group>
       ))}
       {/* Shockwave ring for swarm activation */}
       <mesh ref={shockwaveRef} position={clusterCenter} rotation-x={-Math.PI / 2} visible={false}>
-        <ringGeometry args={[0.5, 1, 32]} />
-        <meshBasicMaterial color="#ff4422" transparent opacity={0.3} side={THREE.DoubleSide} />
+        <ringGeometry args={[0.5, 1.2, 32]} />
+        <meshBasicMaterial color="#ff4422" transparent opacity={0.35} side={THREE.DoubleSide} />
       </mesh>
     </group>
   );

@@ -20,6 +20,8 @@ export function CentralHub() {
   const modelRef = useRef<THREE.Group>(null);
   const glowRef = useRef<THREE.Mesh>(null);
   const haloRef = useRef<THREE.Mesh>(null);
+  const halo2Ref = useRef<THREE.Mesh>(null);
+  const groundCircleRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
   const { scene, animations } = useGLTF('/models/macminiclaws_walk.glb');
   const { actions } = useAnimations(animations, modelRef);
@@ -27,11 +29,8 @@ export function CentralHub() {
   const targetRotY = useRef(0);
   const jumpVelocity = useRef(0);
   const isGrounded = useRef(true);
-  const wasMoving = useRef(false);
-  const walkPhase = useRef(0);
   const setPosition = useHubStore((s) => s.setPosition);
 
-  // Start animation immediately and keep it playing (paused when idle)
   useEffect(() => {
     const actionNames = Object.keys(actions);
     if (actionNames.length > 0) {
@@ -39,7 +38,7 @@ export function CentralHub() {
       if (walkAction) {
         walkAction.play();
         walkAction.setLoop(THREE.LoopRepeat, Infinity);
-        walkAction.timeScale = 0; // Start paused at first frame
+        walkAction.timeScale = 0;
       }
     }
   }, [actions]);
@@ -56,15 +55,6 @@ export function CentralHub() {
     });
   }, [scene]);
 
-  useEffect(() => {
-    console.log('Walk model animations:', animations.map(a => a.name));
-    console.log('Walk model actions:', Object.keys(actions));
-    const box = new THREE.Box3().setFromObject(scene);
-    const size = new THREE.Vector3();
-    box.getSize(size);
-    console.log('Walk model size:', size.x.toFixed(2), size.y.toFixed(2), size.z.toFixed(2));
-  }, [scene, animations, actions]);
-
   useFrame(({ clock }, delta) => {
     if (!groupRef.current) return;
 
@@ -76,7 +66,6 @@ export function CentralHub() {
 
     const isMoving = dir.length() > 0;
 
-    // Control walk animation speed (always playing, just change timeScale)
     const actionNames = Object.keys(actions);
     if (actionNames.length > 0) {
       const walkAction = actions[actionNames[0]];
@@ -131,19 +120,37 @@ export function CentralHub() {
 
     setPosition([pos.x, pos.y, pos.z]);
 
-    const pulse = Math.sin(clock.elapsedTime * 2.5) * 0.5 + 0.5;
+    const t = clock.elapsedTime;
+    const pulse = Math.sin(t * 2.5) * 0.5 + 0.5;
+    const slowPulse = Math.sin(t * 1.2) * 0.5 + 0.5;
+
+    // Inner glow sphere
     if (glowRef.current) {
-      const s = 2.5 + pulse * 0.5;
+      const s = 3 + pulse * 0.8;
       glowRef.current.scale.set(s, s, s);
-      (glowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.02 + pulse * 0.03;
+      (glowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.04 + pulse * 0.04;
     }
+    // Main halo ring
     if (haloRef.current) {
-      const hs = 1.8 + pulse * 0.4;
+      const hs = 2.5 + pulse * 0.6;
       haloRef.current.scale.set(hs, hs, 1);
-      (haloRef.current.material as THREE.MeshBasicMaterial).opacity = 0.04 + pulse * 0.06;
+      (haloRef.current.material as THREE.MeshBasicMaterial).opacity = 0.06 + pulse * 0.08;
     }
+    // Outer halo ring (slower pulse)
+    if (halo2Ref.current) {
+      const hs2 = 3.5 + slowPulse * 0.8;
+      halo2Ref.current.scale.set(hs2, hs2, 1);
+      (halo2Ref.current.material as THREE.MeshBasicMaterial).opacity = 0.03 + slowPulse * 0.04;
+    }
+    // Ground circle
+    if (groundCircleRef.current) {
+      const gs = 2 + pulse * 0.3;
+      groundCircleRef.current.scale.set(gs, gs, 1);
+      (groundCircleRef.current.material as THREE.MeshBasicMaterial).opacity = 0.08 + pulse * 0.06;
+    }
+    // Light pulse
     if (lightRef.current) {
-      lightRef.current.intensity = 2 + pulse * 1.5;
+      lightRef.current.intensity = 3 + pulse * 2;
     }
   });
 
@@ -152,15 +159,28 @@ export function CentralHub() {
       <group ref={modelRef}>
         <primitive object={scene} scale={75} />
       </group>
+      {/* Inner glow */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[1, 16, 16]} />
         <meshBasicMaterial color="#ff4422" transparent opacity={0.06} />
       </mesh>
+      {/* Main halo ring */}
       <mesh ref={haloRef} position={[0, -0.6, 0]} rotation-x={-Math.PI / 2}>
-        <ringGeometry args={[1.5, 3, 32]} />
-        <meshBasicMaterial color="#ff3311" transparent opacity={0.1} side={THREE.DoubleSide} />
+        <ringGeometry args={[1.5, 2.8, 32]} />
+        <meshBasicMaterial color="#ff3311" transparent opacity={0.12} side={THREE.DoubleSide} />
       </mesh>
-      <pointLight ref={lightRef} color="#ff4422" intensity={1.5} distance={12} decay={2} />
+      {/* Outer halo ring */}
+      <mesh ref={halo2Ref} position={[0, -0.6, 0]} rotation-x={-Math.PI / 2}>
+        <ringGeometry args={[3, 4, 32]} />
+        <meshBasicMaterial color="#ff5522" transparent opacity={0.05} side={THREE.DoubleSide} />
+      </mesh>
+      {/* Ground circle */}
+      <mesh ref={groundCircleRef} position={[0, -0.65, 0]} rotation-x={-Math.PI / 2}>
+        <circleGeometry args={[1, 32]} />
+        <meshBasicMaterial color="#ff4422" transparent opacity={0.1} side={THREE.DoubleSide} />
+      </mesh>
+      {/* Stronger point light */}
+      <pointLight ref={lightRef} color="#ff4422" intensity={3} distance={18} decay={2} />
     </group>
   );
 }
