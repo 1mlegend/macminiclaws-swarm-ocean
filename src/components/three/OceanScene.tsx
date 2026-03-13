@@ -20,14 +20,17 @@ import { ZoneLabels } from './ZoneLabels';
 import { ComputeVolcano } from './ComputeVolcano';
 import { EasterEggs } from './EasterEggs';
 import { ConstructionSites } from './ConstructionSites';
+import { DevNode } from './DevNode';
 import { CrabNode } from '@/data/nodes';
 
 interface OceanSceneProps {
   onNodeHover: (node: CrabNode | null, screenPos: { x: number; y: number } | null) => void;
   onNodeClick: (node: CrabNode) => void;
+  onDevHover: (pos: { x: number; y: number }) => void;
+  onDevUnhover: () => void;
 }
 
-export function OceanScene({ onNodeHover, onNodeClick }: OceanSceneProps) {
+export function OceanScene({ onNodeHover, onNodeClick, onDevHover, onDevUnhover }: OceanSceneProps) {
   return (
     <Canvas
       camera={{ position: [15, 12, 15], fov: 55, near: 0.1, far: 200 }}
@@ -61,6 +64,7 @@ export function OceanScene({ onNodeHover, onNodeClick }: OceanSceneProps) {
         <EasterEggs />
         <CentralHub />
         <CrabNodes onNodeHover={onNodeHover} onNodeClick={onNodeClick} />
+        <DevNode onHover={onDevHover} onUnhover={onDevUnhover} />
         <SwarmConnections />
       </Suspense>
       <CameraFollow />

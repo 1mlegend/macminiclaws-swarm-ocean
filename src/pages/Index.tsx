@@ -11,6 +11,7 @@ import { useSwarmStore } from '@/stores/swarmStore';
 const Index = () => {
   const [hoveredNode, setHoveredNode] = useState<CrabNode | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const [devTooltip, setDevTooltip] = useState<{ x: number; y: number } | null>(null);
   const { selectedNodeId, setSelectedNodeId, buildingOpen, setBuildingOpen, contractOpen, setContractOpen } = useSwarmStore();
 
   const handleNodeHover = useCallback((node: CrabNode | null, pos: { x: number; y: number } | null) => {
@@ -22,14 +23,31 @@ const Index = () => {
     setSelectedNodeId(node.id);
   }, [setSelectedNodeId]);
 
+  const handleDevHover = useCallback((pos: { x: number; y: number }) => {
+    setDevTooltip(pos);
+  }, []);
+
+  const handleDevUnhover = useCallback(() => {
+    setDevTooltip(null);
+  }, []);
+
   const selectedNode = selectedNodeId ? swarmNodes.find(n => n.id === selectedNodeId) ?? null : null;
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-background">
-      <OceanScene onNodeHover={handleNodeHover} onNodeClick={handleNodeClick} />
+      <OceanScene onNodeHover={handleNodeHover} onNodeClick={handleNodeClick} onDevHover={handleDevHover} onDevUnhover={handleDevUnhover} />
       <SwarmOverlay />
       {hoveredNode && tooltipPos && (
         <NodeTooltip node={hoveredNode} position={tooltipPos} />
+      )}
+      {devTooltip && (
+        <div
+          className="fixed z-20 pointer-events-none bg-card/90 backdrop-blur-sm border border-primary/30 rounded-md px-3 py-2 glow-box"
+          style={{ left: devTooltip.x + 15, top: devTooltip.y - 50 }}
+        >
+          <p className="font-pixel text-[9px] text-primary">Orpi_ping</p>
+          <p className="text-[10px] font-mono text-muted-foreground">Builder</p>
+        </div>
       )}
       {selectedNode && (
         <NodeDetailPanel node={selectedNode} onClose={() => setSelectedNodeId(null)} />
