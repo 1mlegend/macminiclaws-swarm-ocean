@@ -20,11 +20,14 @@ import { ZoneLabels } from './ZoneLabels';
 import { ComputeVolcano } from './ComputeVolcano';
 import { EasterEggs } from './EasterEggs';
 import { ConstructionSites } from './ConstructionSites';
+import { DevNode } from './DevNode';
 import { CrabNode } from '@/data/nodes';
 
 interface OceanSceneProps {
   onNodeHover: (node: CrabNode | null, screenPos: { x: number; y: number } | null) => void;
   onNodeClick: (node: CrabNode) => void;
+  onDevHover: (pos: { x: number; y: number }) => void;
+  onDevUnhover: () => void;
 }
 
 export function OceanScene({ onNodeHover, onNodeClick }: OceanSceneProps) {
