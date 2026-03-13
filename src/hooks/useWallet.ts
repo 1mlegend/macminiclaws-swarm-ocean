@@ -6,10 +6,18 @@ export function useWallet() {
   const [address, setAddress] = useState<string | null>(null);
   const [wrongNetwork, setWrongNetwork] = useState(false);
 
-  const hasEthereum = typeof window !== 'undefined' && !!(window as any).ethereum;
+  // Lazy check — avoid touching window.ethereum on render to prevent
+  // browser "wants to access other apps" prompts from wallet extensions.
+  const getEthereum = useCallback(() => {
+    if (typeof window !== 'undefined' && (window as any).ethereum) {
+      return (window as any).ethereum;
+    }
+    return null;
+  }, []);
 
   const connect = useCallback(async () => {
-    if (!hasEthereum) {
+    const eth = getEthereum();
+    if (!eth) {
       window.open('https://metamask.io/download/', '_blank');
       return;
     }
