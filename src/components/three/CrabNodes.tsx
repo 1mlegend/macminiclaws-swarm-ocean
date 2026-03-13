@@ -85,9 +85,9 @@ export function CrabNodes({ onNodeHover, onNodeClick }: CrabNodesProps) {
 
       // --- Glow disc (ground halo, only online) ---
       if (n.status === 'online') {
-        const glowPulse = 0.3 + Math.sin(t * 2 + i) * 0.1;
+        const glowPulse = 0.5 + Math.sin(t * 2.5 + i) * 0.2;
         dummy.position.set(n.position[0], 0.02, n.position[2]);
-        dummy.scale.setScalar(glowPulse * baseScale * (isSwarm ? 1.8 : 1.0));
+        dummy.scale.setScalar(glowPulse * baseScale * (isSwarm ? 2.5 : 1.4));
         dummy.rotation.set(-Math.PI / 2, 0, 0);
         dummy.updateMatrix();
       } else {
@@ -173,7 +173,7 @@ export function CrabNodes({ onNodeHover, onNodeClick }: CrabNodesProps) {
       {/* Ground glow discs — 1 per node */}
       <instancedMesh ref={glowRef} args={[undefined, undefined, count]}>
         <circleGeometry args={[1, 16]} />
-        <meshBasicMaterial color="#ff4422" transparent opacity={0.15} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#ff4422" transparent opacity={0.25} side={THREE.DoubleSide} />
       </instancedMesh>
     </group>
   );
