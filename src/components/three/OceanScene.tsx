@@ -30,7 +30,7 @@ interface OceanSceneProps {
   onDevUnhover: () => void;
 }
 
-export function OceanScene({ onNodeHover, onNodeClick }: OceanSceneProps) {
+export function OceanScene({ onNodeHover, onNodeClick, onDevHover, onDevUnhover }: OceanSceneProps) {
   return (
     <Canvas
       camera={{ position: [15, 12, 15], fov: 55, near: 0.1, far: 200 }}
