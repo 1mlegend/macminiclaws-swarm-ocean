@@ -11,7 +11,7 @@ interface SwarmOverlayProps {
 export function SwarmOverlay({ onOpenJobPanel }: SwarmOverlayProps) {
   const { data: metrics } = useNetworkMetrics();
   const { swarmActive, activeCluster } = useSwarmStore();
-  const { shortAddress, wrongNetwork, hasEthereum, connect, switchToBase } = useWallet();
+  const { shortAddress, wrongNetwork, connect, switchToBase } = useWallet();
 
   // Animated fluctuating stats
   const [onlineFlux, setOnlineFlux] = useState(0);
