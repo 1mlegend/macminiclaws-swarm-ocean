@@ -64,6 +64,7 @@ export function OceanScene({ onNodeHover, onNodeClick, onDevHover, onDevUnhover 
         <EasterEggs />
         <CentralHub />
         <CrabNodes onNodeHover={onNodeHover} onNodeClick={onNodeClick} />
+        <DevNode onHover={onDevHover} onUnhover={onDevUnhover} />
         <SwarmConnections />
       </Suspense>
       <CameraFollow />

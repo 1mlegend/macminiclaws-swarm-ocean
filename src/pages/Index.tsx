@@ -40,6 +40,15 @@ const Index = () => {
       {hoveredNode && tooltipPos && (
         <NodeTooltip node={hoveredNode} position={tooltipPos} />
       )}
+      {devTooltip && (
+        <div
+          className="fixed z-20 pointer-events-none bg-card/90 backdrop-blur-sm border border-primary/30 rounded-md px-3 py-2 glow-box"
+          style={{ left: devTooltip.x + 15, top: devTooltip.y - 50 }}
+        >
+          <p className="font-pixel text-[9px] text-primary">Orpi_ping</p>
+          <p className="text-[10px] font-mono text-muted-foreground">Builder</p>
+        </div>
+      )}
       {selectedNode && (
         <NodeDetailPanel node={selectedNode} onClose={() => setSelectedNodeId(null)} />
       )}
