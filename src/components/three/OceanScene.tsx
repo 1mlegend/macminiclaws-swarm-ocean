@@ -10,7 +10,7 @@ import { CameraFollow } from './CameraFollow';
 import { SunsetSky } from './SunsetSky';
 import { AnimatedWater } from './AnimatedWater';
 import { KrustyBuilding } from './KrustyBuilding';
-import { ContractText } from './ContractText';
+
 import { MoltLobster } from './MoltLobster';
 import { CrabNests } from './CrabNests';
 import { EnergySources } from './EnergySources';
@@ -52,7 +52,7 @@ export function OceanScene({ onNodeHover, onNodeClick, onDevHover, onDevUnhover 
         <AnimatedWater />
         <SeaPlants />
         <KrustyBuilding />
-        <ContractText />
+        
         <MoltLobster />
         <CrabNests />
         <EnergySources />
