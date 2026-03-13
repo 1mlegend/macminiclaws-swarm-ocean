@@ -60,7 +60,7 @@ export function DevNode({ onHover, onUnhover }: {
     <group ref={groupRef} position={DEV_POS}>
       <primitive
         object={scene}
-        scale={0.5}
+        scale={3}
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
         onClick={handleClick}
