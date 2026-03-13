@@ -61,7 +61,7 @@ export function DevNode({ onHover, onUnhover }: {
       <primitive
         object={scene}
         scale={3}
-        rotation={[0, Math.PI / 2, 0]}
+        rotation={[0, -Math.PI / 2, 0]}
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
         onClick={handleClick}
