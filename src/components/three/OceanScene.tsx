@@ -52,7 +52,7 @@ export function OceanScene({ onNodeHover, onNodeClick, onDevHover, onDevUnhover 
         <AnimatedWater />
         <SeaPlants />
         <KrustyBuilding />
-        <ContractText />
+        
         <MoltLobster />
         <CrabNests />
         <EnergySources />
