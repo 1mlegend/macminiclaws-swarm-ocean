@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const DEV_POS: [number, number, number] = [15, 5, 6];
+const DEV_POS: [number, number, number] = [15, 3, 5];
 
 export function DevNode({ onHover, onUnhover }: {
   onHover: (pos: { x: number; y: number }) => void;
