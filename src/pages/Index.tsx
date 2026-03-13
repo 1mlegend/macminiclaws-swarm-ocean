@@ -11,6 +11,7 @@ import { useSwarmStore } from '@/stores/swarmStore';
 const Index = () => {
   const [hoveredNode, setHoveredNode] = useState<CrabNode | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const [devTooltip, setDevTooltip] = useState<{ x: number; y: number } | null>(null);
   const { selectedNodeId, setSelectedNodeId, buildingOpen, setBuildingOpen, contractOpen, setContractOpen } = useSwarmStore();
 
   const handleNodeHover = useCallback((node: CrabNode | null, pos: { x: number; y: number } | null) => {
@@ -22,11 +23,19 @@ const Index = () => {
     setSelectedNodeId(node.id);
   }, [setSelectedNodeId]);
 
+  const handleDevHover = useCallback((pos: { x: number; y: number }) => {
+    setDevTooltip(pos);
+  }, []);
+
+  const handleDevUnhover = useCallback(() => {
+    setDevTooltip(null);
+  }, []);
+
   const selectedNode = selectedNodeId ? swarmNodes.find(n => n.id === selectedNodeId) ?? null : null;
 
   return (
     <div className="w-screen h-screen overflow-hidden bg-background">
-      <OceanScene onNodeHover={handleNodeHover} onNodeClick={handleNodeClick} />
+      <OceanScene onNodeHover={handleNodeHover} onNodeClick={handleNodeClick} onDevHover={handleDevHover} onDevUnhover={handleDevUnhover} />
       <SwarmOverlay />
       {hoveredNode && tooltipPos && (
         <NodeTooltip node={hoveredNode} position={tooltipPos} />
