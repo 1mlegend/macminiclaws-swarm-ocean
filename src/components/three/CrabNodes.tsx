@@ -173,7 +173,7 @@ export function CrabNodes({ onNodeHover, onNodeClick }: CrabNodesProps) {
       {/* Ground glow discs — 1 per node */}
       <instancedMesh ref={glowRef} args={[undefined, undefined, count]}>
         <circleGeometry args={[1, 16]} />
-        <meshBasicMaterial color="#ff4422" transparent opacity={0.15} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#ff4422" transparent opacity={0.25} side={THREE.DoubleSide} />
       </instancedMesh>
     </group>
   );
