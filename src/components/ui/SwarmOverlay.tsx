@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
-import { getSwarmStats } from '@/data/nodes';
+import { useNetworkMetrics } from '@/hooks/useNetworkData';
 import { useSwarmStore } from '@/stores/swarmStore';
 import { useWallet } from '@/hooks/useWallet';
+import { Zap } from 'lucide-react';
 
-export function SwarmOverlay() {
-  const baseStats = getSwarmStats();
+interface SwarmOverlayProps {
+  onOpenJobPanel: () => void;
+}
+
+export function SwarmOverlay({ onOpenJobPanel }: SwarmOverlayProps) {
+  const { data: metrics } = useNetworkMetrics();
   const { swarmActive, activeCluster } = useSwarmStore();
   const { shortAddress, wrongNetwork, hasEthereum, connect, switchToBase } = useWallet();
 
@@ -36,6 +41,10 @@ export function SwarmOverlay() {
     }
   };
 
+  const online = metrics?.onlineNodes ?? 0;
+  const clusters = metrics?.activeClusters ?? 0;
+  const totalCores = metrics?.totalCompute ?? 0;
+
   return (
     <>
       {/* Top Left — Logo */}
@@ -48,8 +57,15 @@ export function SwarmOverlay() {
         </p>
       </div>
 
-      {/* Top Right — Wallet */}
-      <div className="fixed top-6 right-6 z-10">
+      {/* Top Right — Wallet + Submit Job */}
+      <div className="fixed top-6 right-6 z-10 flex items-center gap-2">
+        <button
+          onClick={onOpenJobPanel}
+          className="flex items-center gap-1.5 px-4 py-2 border border-secondary/40 rounded-md text-xs text-secondary bg-card/80 backdrop-blur-sm hover:bg-secondary/20 hover:shadow-[0_0_15px_hsl(25_70%_55%/0.4)] transition-all font-mono"
+        >
+          <Zap size={12} />
+          Submit Job
+        </button>
         <button
           onClick={handleWalletClick}
           className="px-4 py-2 border border-primary/40 rounded-md text-xs text-primary bg-card/80 backdrop-blur-sm hover:bg-primary/20 hover:shadow-[0_0_15px_hsl(0_75%_55%/0.4)] transition-all glow-box font-mono"
@@ -61,25 +77,23 @@ export function SwarmOverlay() {
       {/* Bottom Left — Animated Stats */}
       <div className="fixed bottom-6 left-6 z-10 bg-card/70 backdrop-blur-sm border border-border rounded-md p-4 glow-box">
         <div className="flex items-center gap-2 mb-3">
-          {/* Live indicator dot */}
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
           <p className="font-pixel text-[8px] text-primary tracking-wider">SWARM STATUS</p>
         </div>
         <div className="space-y-1.5 text-xs font-mono">
           <div className="flex justify-between gap-8">
             <span className="text-muted-foreground">Nodes online</span>
-            <span className="text-foreground">{baseStats.online + onlineFlux}</span>
+            <span className="text-foreground">{online + onlineFlux}</span>
           </div>
           <div className="flex justify-between gap-8">
             <span className="text-muted-foreground">Active swarms</span>
-            <span className="text-foreground">{baseStats.clusters} clusters</span>
+            <span className="text-foreground">{clusters} clusters</span>
           </div>
           <div className="flex justify-between gap-8">
             <span className="text-muted-foreground">Total compute</span>
-            <span className="text-foreground">{(baseStats.totalCores + coreFlux).toLocaleString()} cores</span>
+            <span className="text-foreground">{(totalCores + coreFlux).toLocaleString()} cores</span>
           </div>
         </div>
-        {/* Swarm mode indicator */}
         {swarmActive && (
           <div className="mt-3 pt-2 border-t border-primary/20">
             <p className="font-pixel text-[7px] text-primary glow-red animate-pulse-glow">
