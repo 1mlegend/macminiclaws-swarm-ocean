@@ -29,9 +29,7 @@ export function SwarmOverlay({ onOpenJobPanel }: SwarmOverlayProps) {
     ? wrongNetwork
       ? 'Switch to Base'
       : shortAddress
-    : hasEthereum
-      ? 'Connect Wallet'
-      : 'Install MetaMask';
+    : 'Connect Wallet';
 
   const handleWalletClick = () => {
     if (shortAddress && wrongNetwork) {
