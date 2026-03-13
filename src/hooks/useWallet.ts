@@ -6,8 +6,8 @@ export function useWallet() {
   const [address, setAddress] = useState<string | null>(null);
   const [wrongNetwork, setWrongNetwork] = useState(false);
 
-  // Lazy check — avoid touching window.ethereum on render to prevent
-  // browser "wants to access other apps" prompts from wallet extensions.
+  // Lazy check — only touch window.ethereum when user triggers an action,
+  // never on render. This prevents browser "wants to access other apps" prompts.
   const getEthereum = useCallback(() => {
     if (typeof window !== 'undefined' && (window as any).ethereum) {
       return (window as any).ethereum;
@@ -21,23 +21,21 @@ export function useWallet() {
       window.open('https://metamask.io/download/', '_blank');
       return;
     }
-    const eth = (window as any).ethereum;
     try {
       const accounts = await eth.request({ method: 'eth_requestAccounts' });
       if (accounts.length > 0) {
         setAddress(accounts[0]);
-        // Check chain
         const chainId = await eth.request({ method: 'eth_chainId' });
         setWrongNetwork(chainId !== BASE_CHAIN_ID);
       }
     } catch (e) {
       console.error('Wallet connection failed', e);
     }
-  }, [hasEthereum]);
+  }, [getEthereum]);
 
   const switchToBase = useCallback(async () => {
-    if (!hasEthereum) return;
-    const eth = (window as any).ethereum;
+    const eth = getEthereum();
+    if (!eth) return;
     try {
       await eth.request({
         method: 'wallet_switchEthereumChain',
@@ -45,7 +43,6 @@ export function useWallet() {
       });
       setWrongNetwork(false);
     } catch (e: any) {
-      // Chain not added — add it
       if (e.code === 4902) {
         await eth.request({
           method: 'wallet_addEthereumChain',
@@ -60,9 +57,9 @@ export function useWallet() {
         setWrongNetwork(false);
       }
     }
-  }, [hasEthereum]);
+  }, [getEthereum]);
 
   const shortAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : null;
 
-  return { address, shortAddress, wrongNetwork, hasEthereum, connect, switchToBase };
+  return { address, shortAddress, wrongNetwork, connect, switchToBase };
 }
