@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { OceanScene } from '@/components/three/OceanScene';
 import { SwarmOverlay } from '@/components/ui/SwarmOverlay';
 import { MetricsDashboard } from '@/components/ui/MetricsDashboard';
-import { LaunchCountdown } from '@/components/ui/LaunchCountdown';
+
 import { NodeTooltip } from '@/components/ui/NodeTooltip';
 import { NodeDetailPanel } from '@/components/ui/NodeDetailPanel';
 import { BuildingPopup } from '@/components/ui/BuildingPopup';
