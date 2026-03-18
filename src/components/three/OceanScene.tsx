@@ -20,6 +20,7 @@ import { ZoneLabels } from './ZoneLabels';
 import { ComputeVolcano } from './ComputeVolcano';
 import { EasterEggs } from './EasterEggs';
 import { ConstructionSites } from './ConstructionSites';
+import { LaunchCountdown3D } from './LaunchCountdown3D';
 import { DevNode } from './DevNode';
 import { CrabNode } from '@/data/nodes';
 
