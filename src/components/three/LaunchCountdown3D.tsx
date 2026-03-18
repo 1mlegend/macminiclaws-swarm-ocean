@@ -1,13 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const LAUNCH_TIME = new Date("2026-03-18T19:00:00Z").getTime();
-
 export function LaunchCountdown3D() {
   const timeStr = '00 : 00 : 00';
   const isLive = false;
+  const glowRef = useRef<THREE.Mesh>(null);
 
   useFrame(({ clock }) => {
     if (glowRef.current) {
