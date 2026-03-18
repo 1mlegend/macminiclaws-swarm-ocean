@@ -1,71 +1,74 @@
-import { useState, useEffect } from 'react';
-import { Html } from '@react-three/drei';
+import { useState, useEffect, useRef } from 'react';
+import { Text } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
-const LAUNCH_TIME = new Date("2026-03-16T20:00:00Z").getTime();
+const LAUNCH_TIME = new Date("2026-03-19T20:00:00Z").getTime();
 
 export function LaunchCountdown3D() {
-  const [remaining, setRemaining] = useState(() => Math.max(0, LAUNCH_TIME - Date.now()));
+  const [timeStr, setTimeStr] = useState('');
+  const [isLive, setIsLive] = useState(false);
+  const glowRef = useRef<THREE.Mesh>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setRemaining(Math.max(0, LAUNCH_TIME - Date.now()));
-    }, 1000);
+    const update = () => {
+      const diff = Math.max(0, LAUNCH_TIME - Date.now());
+      if (diff <= 0) {
+        setIsLive(true);
+        setTimeStr('$MMC LIVE');
+      } else {
+        const s = Math.floor(diff / 1000);
+        const hh = String(Math.floor(s / 3600)).padStart(2, '0');
+        const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+        const ss = String(s % 60).padStart(2, '0');
+        setTimeStr(`${hh} : ${mm} : ${ss}`);
+      }
+    };
+    update();
+    const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  const isLive = remaining <= 0;
-  const totalSec = Math.floor(remaining / 1000);
-  const hh = String(Math.floor(totalSec / 3600)).padStart(2, '0');
-  const mm = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
-  const ss = String(totalSec % 60).padStart(2, '0');
+  useFrame(({ clock }) => {
+    if (glowRef.current) {
+      const mat = glowRef.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = 0.08 + Math.sin(clock.elapsedTime * 2) * 0.04;
+    }
+  });
 
   return (
-    <group position={[0, 8, 0]}>
-      <Html center distanceFactor={15} style={{ pointerEvents: 'none', userSelect: 'none' }}>
-        <div style={{
-          textAlign: 'center',
-          background: 'rgba(20, 8, 4, 0.75)',
-          border: '1px solid rgba(200, 60, 30, 0.4)',
-          borderRadius: '8px',
-          padding: '12px 24px',
-          backdropFilter: 'blur(6px)',
-          boxShadow: '0 0 20px rgba(200, 60, 30, 0.3), 0 0 40px rgba(200, 60, 30, 0.1), inset 0 0 15px rgba(200, 60, 30, 0.05)',
-          minWidth: '200px',
-        }}>
-          <div style={{
-            fontFamily: "'Press Start 2P', cursive",
-            fontSize: '8px',
-            color: '#d97706',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            marginBottom: '8px',
-            textShadow: '0 0 8px rgba(217, 119, 6, 0.6)',
-          }}>
-            $MMC LAUNCH
-          </div>
-          {isLive ? (
-            <div style={{
-              fontFamily: "'Press Start 2P', cursive",
-              fontSize: '16px',
-              color: '#ef4444',
-              textShadow: '0 0 15px rgba(239, 68, 68, 0.8), 0 0 30px rgba(239, 68, 68, 0.4)',
-              animation: 'pulse 1.5s ease-in-out infinite',
-            }}>
-              $MMC LIVE
-            </div>
-          ) : (
-            <div style={{
-              fontFamily: "'Press Start 2P', cursive",
-              fontSize: '18px',
-              color: '#ef4444',
-              letterSpacing: '4px',
-              textShadow: '0 0 10px rgba(239, 68, 68, 0.8), 0 0 30px rgba(239, 68, 68, 0.4)',
-            }}>
-              {hh} : {mm} : {ss}
-            </div>
-          )}
-        </div>
-      </Html>
+    <group position={[-18, 3, -10]}>
+      {/* Glow backdrop */}
+      <mesh ref={glowRef} position={[0, -0.1, -0.1]}>
+        <planeGeometry args={[5, 2.2]} />
+        <meshBasicMaterial color="#c83c1e" transparent opacity={0.1} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Title */}
+      <Text
+        position={[0, 0.5, 0]}
+        fontSize={0.3}
+        color="#d97706"
+        anchorX="center"
+        anchorY="middle"
+        font="/fonts/PressStart2P-Regular.ttf"
+        letterSpacing={0.1}
+      >
+        $MMC LAUNCH
+      </Text>
+
+      {/* Timer */}
+      <Text
+        position={[0, -0.2, 0]}
+        fontSize={isLive ? 0.5 : 0.55}
+        color="#ef4444"
+        anchorX="center"
+        anchorY="middle"
+        font="/fonts/PressStart2P-Regular.ttf"
+        letterSpacing={0.08}
+      >
+        {timeStr}
+      </Text>
     </group>
   );
 }
