@@ -47,25 +47,25 @@ export function LaunchCountdown3D() {
       {/* Title */}
       <Text
         position={[0, 0.5, 0]}
-        fontSize={0.3}
+        fontSize={0.35}
         color="#d97706"
         anchorX="center"
         anchorY="middle"
-        font="/fonts/PressStart2P-Regular.ttf"
-        letterSpacing={0.1}
+        letterSpacing={0.15}
+        fontWeight="bold"
       >
         $MMC LAUNCH
       </Text>
 
       {/* Timer */}
       <Text
-        position={[0, -0.2, 0]}
-        fontSize={isLive ? 0.5 : 0.55}
+        position={[0, -0.3, 0]}
+        fontSize={isLive ? 0.5 : 0.6}
         color="#ef4444"
         anchorX="center"
         anchorY="middle"
-        font="/fonts/PressStart2P-Regular.ttf"
-        letterSpacing={0.08}
+        letterSpacing={0.1}
+        fontWeight="bold"
       >
         {timeStr}
       </Text>
