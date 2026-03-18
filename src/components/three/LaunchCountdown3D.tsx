@@ -3,7 +3,7 @@ import { Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const LAUNCH_TIME = new Date("2026-03-19T20:00:00Z").getTime();
+const LAUNCH_TIME = new Date("2026-03-18T20:00:00Z").getTime();
 
 export function LaunchCountdown3D() {
   const [timeStr, setTimeStr] = useState('');
