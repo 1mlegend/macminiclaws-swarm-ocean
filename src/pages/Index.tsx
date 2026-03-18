@@ -44,7 +44,7 @@ const Index = () => {
       <OceanScene onNodeHover={handleNodeHover} onNodeClick={handleNodeClick} onDevHover={handleDevHover} onDevUnhover={handleDevUnhover} />
       <SwarmOverlay onOpenJobPanel={() => setJobPanelOpen(true)} />
       <MetricsDashboard />
-      <LaunchCountdown />
+      
       {hoveredNode && tooltipPos && (
         <NodeTooltip node={hoveredNode} position={tooltipPos} />
       )}

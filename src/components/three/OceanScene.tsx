@@ -63,6 +63,7 @@ export function OceanScene({ onNodeHover, onNodeClick, onDevHover, onDevUnhover 
         <ComputeVolcano />
         <ConstructionSites />
         <EasterEggs />
+        <LaunchCountdown3D />
         <CentralHub />
         <CrabNodes onNodeHover={onNodeHover} onNodeClick={onNodeClick} />
         <DevNode onHover={onDevHover} onUnhover={onDevUnhover} />
