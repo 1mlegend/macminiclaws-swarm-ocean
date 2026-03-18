@@ -1,33 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const LAUNCH_TIME = new Date("2026-03-18T19:00:00Z").getTime();
-
 export function LaunchCountdown3D() {
-  const [timeStr, setTimeStr] = useState('');
-  const [isLive, setIsLive] = useState(false);
+  const timeStr = '00 : 00 : 00';
+  const isLive = false;
   const glowRef = useRef<THREE.Mesh>(null);
-
-  useEffect(() => {
-    const update = () => {
-      const diff = Math.max(0, LAUNCH_TIME - Date.now());
-      if (diff <= 0) {
-        setIsLive(true);
-        setTimeStr('$MMC LIVE');
-      } else {
-        const s = Math.floor(diff / 1000);
-        const hh = String(Math.floor(s / 3600)).padStart(2, '0');
-        const mm = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
-        const ss = String(s % 60).padStart(2, '0');
-        setTimeStr(`${hh} : ${mm} : ${ss}`);
-      }
-    };
-    update();
-    const interval = setInterval(update, 1000);
-    return () => clearInterval(interval);
-  }, []);
 
   useFrame(({ clock }) => {
     if (glowRef.current) {
