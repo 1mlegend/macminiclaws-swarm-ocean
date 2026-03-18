@@ -37,7 +37,7 @@ export function LaunchCountdown3D() {
   });
 
   return (
-    <group position={[0, 3, -10]} rotation={[0, 30 * (Math.PI / 180), 0]}>
+    <group position={[0, 3, -12]}>
       {/* Glow backdrop */}
       <mesh ref={glowRef} position={[0, -0.1, -0.1]}>
         <planeGeometry args={[5, 2.2]} />
