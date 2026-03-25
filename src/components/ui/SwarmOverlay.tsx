@@ -13,7 +13,6 @@ export function SwarmOverlay({ onOpenJobPanel }: SwarmOverlayProps) {
   const { swarmActive, activeCluster } = useSwarmStore();
   const { shortAddress, wrongNetwork, connect, switchToBase } = useWallet();
 
-  // Animated fluctuating stats
   const [onlineFlux, setOnlineFlux] = useState(0);
   const [coreFlux, setCoreFlux] = useState(0);
 
@@ -48,7 +47,7 @@ export function SwarmOverlay({ onOpenJobPanel }: SwarmOverlayProps) {
       {/* Top Left — Logo */}
       <div className="fixed top-6 left-6 z-10">
         <h1 className="font-pixel text-sm text-primary glow-red tracking-wider">
-          MACMINICLAWS
+          OCTAW
         </h1>
         <p className="text-[10px] text-muted-foreground mt-1 tracking-widest uppercase">
           Swarm Compute Network
@@ -59,14 +58,14 @@ export function SwarmOverlay({ onOpenJobPanel }: SwarmOverlayProps) {
       <div className="fixed top-6 right-6 z-10 flex items-center gap-2">
         <button
           onClick={onOpenJobPanel}
-          className="flex items-center gap-1.5 px-4 py-2 border border-secondary/40 rounded-md text-xs text-secondary bg-card/80 backdrop-blur-sm hover:bg-secondary/20 hover:shadow-[0_0_15px_hsl(25_70%_55%/0.4)] transition-all font-mono"
+          className="flex items-center gap-1.5 px-4 py-2 border border-secondary/40 rounded-md text-xs text-secondary bg-card/80 backdrop-blur-sm hover:bg-secondary/20 hover:shadow-[0_0_15px_hsl(195_80%_50%/0.4)] transition-all font-mono"
         >
           <Zap size={12} />
           Submit Job
         </button>
         <button
           onClick={handleWalletClick}
-          className="px-4 py-2 border border-primary/40 rounded-md text-xs text-primary bg-card/80 backdrop-blur-sm hover:bg-primary/20 hover:shadow-[0_0_15px_hsl(0_75%_55%/0.4)] transition-all glow-box font-mono"
+          className="px-4 py-2 border border-primary/40 rounded-md text-xs text-primary bg-card/80 backdrop-blur-sm hover:bg-primary/20 hover:shadow-[0_0_15px_hsl(210_90%_55%/0.4)] transition-all glow-box font-mono"
         >
           {walletLabel}
         </button>
