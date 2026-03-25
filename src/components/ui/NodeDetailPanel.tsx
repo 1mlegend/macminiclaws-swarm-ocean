@@ -39,7 +39,7 @@ export function NodeDetailPanel({ node, onClose }: NodeDetailPanelProps) {
         <Row label="Reputation" value={`${node.reputation}%`} />
         <Row label="Jobs done" value={`${jobs}`} />
         <Row label="Uptime" value={`${uptime}%`} />
-        <Row label="Network" value="Base" />
+        <Row label="Network" value="Solana" />
         <Row label="Wallet" value={wallet} />
       </div>
     </div>

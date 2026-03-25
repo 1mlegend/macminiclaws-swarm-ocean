@@ -11,7 +11,7 @@ interface SwarmOverlayProps {
 export function SwarmOverlay({ onOpenJobPanel }: SwarmOverlayProps) {
   const { data: metrics } = useNetworkMetrics();
   const { swarmActive, activeCluster } = useSwarmStore();
-  const { shortAddress, wrongNetwork, connect, switchToBase } = useWallet();
+  const { shortAddress, connect } = useWallet();
 
   const [onlineFlux, setOnlineFlux] = useState(0);
   const [coreFlux, setCoreFlux] = useState(0);
@@ -24,19 +24,7 @@ export function SwarmOverlay({ onOpenJobPanel }: SwarmOverlayProps) {
     return () => clearInterval(interval);
   }, []);
 
-  const walletLabel = shortAddress
-    ? wrongNetwork
-      ? 'Switch to Base'
-      : shortAddress
-    : 'Connect Wallet';
-
-  const handleWalletClick = () => {
-    if (shortAddress && wrongNetwork) {
-      switchToBase();
-    } else {
-      connect();
-    }
-  };
+  const walletLabel = shortAddress || 'Connect Wallet';
 
   const online = metrics?.onlineNodes ?? 0;
   const clusters = metrics?.activeClusters ?? 0;
@@ -64,7 +52,7 @@ export function SwarmOverlay({ onOpenJobPanel }: SwarmOverlayProps) {
           Submit Job
         </button>
         <button
-          onClick={handleWalletClick}
+          onClick={connect}
           className="px-4 py-2 border border-primary/40 rounded-md text-xs text-primary bg-card/80 backdrop-blur-sm hover:bg-primary/20 hover:shadow-[0_0_15px_hsl(210_90%_55%/0.4)] transition-all glow-box font-mono"
         >
           {walletLabel}
