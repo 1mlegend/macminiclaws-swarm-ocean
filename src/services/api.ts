@@ -1,5 +1,5 @@
 /**
- * API service layer for MACMINICLAWS backend.
+ * API service layer for OCTAW backend.
  * Falls back to mock data when the backend is unavailable.
  */
 

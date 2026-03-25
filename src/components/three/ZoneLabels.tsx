@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import * as THREE from 'three';
 
 const ZONES = [
-  { name: 'CLAW CORE', pos: [0, 0.3, 0] as [number, number, number] },
+  { name: 'OCTAW CORE', pos: [0, 0.3, 0] as [number, number, number] },
   { name: 'EDGE FIELD', pos: [18, 0.3, -10] as [number, number, number] },
   { name: 'CLUSTER ZONE', pos: [-15, 0.3, -12] as [number, number, number] },
   { name: 'COMPUTE VALLEY', pos: [8, 0.3, 18] as [number, number, number] },
@@ -31,12 +31,12 @@ export function ZoneLabels() {
           key={i}
           position={zone.pos}
           fontSize={0.35}
-          color="#ff6622"
+          color="#3b82f6"
           anchorX="center"
           anchorY="middle"
           rotation-x={-Math.PI / 2}
           outlineWidth={0.01}
-          outlineColor="#1a0800"
+          outlineColor="#001a33"
         >
           {zone.name}
         </Text>
