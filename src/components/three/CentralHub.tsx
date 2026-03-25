@@ -23,7 +23,7 @@ export function CentralHub() {
   const halo2Ref = useRef<THREE.Mesh>(null);
   const groundCircleRef = useRef<THREE.Mesh>(null);
   const lightRef = useRef<THREE.PointLight>(null);
-  const { scene, animations } = useGLTF('/models/macminiclaws_walk.glb');
+  const { scene, animations } = useGLTF('/models/octaw_main.glb');
   const { actions } = useAnimations(animations, modelRef);
   const velocity = useRef(new THREE.Vector3());
   const targetRotY = useRef(0);
@@ -124,31 +124,26 @@ export function CentralHub() {
     const pulse = Math.sin(t * 2.5) * 0.5 + 0.5;
     const slowPulse = Math.sin(t * 1.2) * 0.5 + 0.5;
 
-    // Inner glow sphere
     if (glowRef.current) {
       const s = 3 + pulse * 0.8;
       glowRef.current.scale.set(s, s, s);
       (glowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.04 + pulse * 0.04;
     }
-    // Main halo ring
     if (haloRef.current) {
       const hs = 2.5 + pulse * 0.6;
       haloRef.current.scale.set(hs, hs, 1);
       (haloRef.current.material as THREE.MeshBasicMaterial).opacity = 0.06 + pulse * 0.08;
     }
-    // Outer halo ring (slower pulse)
     if (halo2Ref.current) {
       const hs2 = 3.5 + slowPulse * 0.8;
       halo2Ref.current.scale.set(hs2, hs2, 1);
       (halo2Ref.current.material as THREE.MeshBasicMaterial).opacity = 0.03 + slowPulse * 0.04;
     }
-    // Ground circle
     if (groundCircleRef.current) {
       const gs = 2 + pulse * 0.3;
       groundCircleRef.current.scale.set(gs, gs, 1);
       (groundCircleRef.current.material as THREE.MeshBasicMaterial).opacity = 0.08 + pulse * 0.06;
     }
-    // Light pulse
     if (lightRef.current) {
       lightRef.current.intensity = 3 + pulse * 2;
     }
@@ -159,30 +154,25 @@ export function CentralHub() {
       <group ref={modelRef}>
         <primitive object={scene} scale={75} />
       </group>
-      {/* Inner glow */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[1, 16, 16]} />
-        <meshBasicMaterial color="#ff4422" transparent opacity={0.06} />
+        <meshBasicMaterial color="#2266ff" transparent opacity={0.06} />
       </mesh>
-      {/* Main halo ring */}
       <mesh ref={haloRef} position={[0, -0.6, 0]} rotation-x={-Math.PI / 2}>
         <ringGeometry args={[1.5, 2.8, 32]} />
-        <meshBasicMaterial color="#ff3311" transparent opacity={0.12} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#3388ff" transparent opacity={0.12} side={THREE.DoubleSide} />
       </mesh>
-      {/* Outer halo ring */}
       <mesh ref={halo2Ref} position={[0, -0.6, 0]} rotation-x={-Math.PI / 2}>
         <ringGeometry args={[3, 4, 32]} />
-        <meshBasicMaterial color="#ff5522" transparent opacity={0.05} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#2255ff" transparent opacity={0.05} side={THREE.DoubleSide} />
       </mesh>
-      {/* Ground circle */}
       <mesh ref={groundCircleRef} position={[0, -0.65, 0]} rotation-x={-Math.PI / 2}>
         <circleGeometry args={[1, 32]} />
-        <meshBasicMaterial color="#ff4422" transparent opacity={0.1} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#2266ff" transparent opacity={0.1} side={THREE.DoubleSide} />
       </mesh>
-      {/* Stronger point light */}
-      <pointLight ref={lightRef} color="#ff4422" intensity={3} distance={18} decay={2} />
+      <pointLight ref={lightRef} color="#2266ff" intensity={3} distance={18} decay={2} />
     </group>
   );
 }
 
-useGLTF.preload('/models/macminiclaws_walk.glb');
+useGLTF.preload('/models/octaw_main.glb');
